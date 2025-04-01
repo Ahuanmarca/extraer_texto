@@ -6,7 +6,7 @@ from collections import Counter
 nombre_archivo = input("Introduce el nombre del archivo .txt a procesar (sin extensión): ").strip()
 archivo_entrada = f"{nombre_archivo}.txt"
 archivo_salida = f"{nombre_archivo}_normalizado.txt"
-archivo_log = f"{nombre_archivo}_log.txt"
+archivo_log = f"{nombre_archivo[:8]}.log"
 
 # === LECTURA ===
 with open(archivo_entrada, 'r', encoding='utf-8') as f:
@@ -29,6 +29,9 @@ log_advertencias = []
 pregunta_actual = ""
 opciones_actuales = []
 letras_actuales = []
+
+with open(archivo_log, 'a', encoding='utf-8') as f:
+    f.write('\nAdvertencias en proceso de normalización:\n')
 
 def guardar_pregunta_y_opciones():
     if not pregunta_actual:
@@ -92,7 +95,7 @@ with open(archivo_salida, 'w', encoding='utf-8') as f:
     for linea in nueva_lineas:
         f.write(linea + '\n')
 
-with open(archivo_log, 'w', encoding='utf-8') as f:
+with open(archivo_log, 'a', encoding='utf-8') as f:
     for advertencia in log_advertencias:
         f.write(advertencia + '\n')
 

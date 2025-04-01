@@ -26,7 +26,7 @@ def palabra_valida(palabra):
 nombre_archivo = input("Introduce el nombre del archivo .txt a revisar (sin extensión): ").strip()
 archivo_entrada = f"{nombre_archivo}.txt"
 archivo_salida = f"{nombre_archivo}_limpiado.txt"
-archivo_log = f"{nombre_archivo}_log.txt"
+archivo_log = f"{nombre_archivo[:8]}.log"
 
 # === LECTURA ===
 with open(archivo_entrada, 'r', encoding='utf-8') as f:
@@ -88,7 +88,8 @@ if palabras_aceptadas:
             f.write(palabra + '\n')
 
 # === GUARDAR LOG ===
-with open(archivo_log, 'w', encoding='utf-8') as f:
+with open(archivo_log, 'a', encoding='utf-8') as f:
+    f.write("\nLog de limpieza de guiones:\n")
     if palabras_aceptadas:
         lista = ', '.join(sorted(palabras_aceptadas))
         f.write(f"Palabras agregadas a diccionario.txt: {lista}\n\n")

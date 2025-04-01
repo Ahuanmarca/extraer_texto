@@ -19,7 +19,7 @@ if not os.path.isdir(carpeta_imagenes):
 
 # Archivos de salida
 archivo_salida = os.path.join(os.getcwd(), f"{nombre_carpeta}_extraido.txt")
-archivo_log = os.path.join(os.getcwd(), f"{nombre_carpeta}_errores.log")
+archivo_log = os.path.join(os.getcwd(), f"{nombre_carpeta}.log")
 
 # Crear carpeta temporal para conversiones
 carpeta_temporal = os.path.join(os.getcwd(), f"__tmp_{nombre_carpeta}")
@@ -29,7 +29,7 @@ os.makedirs(carpeta_temporal, exist_ok=True)
 with open(archivo_salida, 'w', encoding='utf-8') as f:
     f.write('')
 with open(archivo_log, 'w', encoding='utf-8') as f:
-    f.write('')
+    f.write('Errores en extracción de imágenes:\n')
 
 # Contadores
 procesadas = 0
@@ -72,6 +72,10 @@ for nombre_archivo in sorted(os.listdir(carpeta_imagenes)):
         with open(archivo_log, 'a', encoding='utf-8') as f:
             f.write(f"{nombre_archivo}: {str(e)}\n")
         print(f'⚠️ Error procesando {nombre_archivo}, registrado en el log.')
+
+if errores == 0:
+    with open(archivo_log, 'a', encoding='utf-8') as f:
+        f.write("No se encontraron errores en la lectura de las imágenes.\n")
 
 # Eliminar carpeta temporal
 shutil.rmtree(carpeta_temporal, ignore_errors=True)
