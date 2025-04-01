@@ -18,7 +18,7 @@ if not os.path.isdir(carpeta_imagenes):
     exit(1)
 
 # Archivos de salida
-archivo_salida = os.path.join(os.getcwd(), f"{nombre_carpeta}.txt")
+archivo_salida = os.path.join(os.getcwd(), f"{nombre_carpeta}_extraido.txt")
 archivo_log = os.path.join(os.getcwd(), f"{nombre_carpeta}_errores.log")
 
 # Crear carpeta temporal para conversiones

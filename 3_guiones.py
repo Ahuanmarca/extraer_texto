@@ -25,7 +25,7 @@ def palabra_valida(palabra):
 # === ENTRADA ===
 nombre_archivo = input("Introduce el nombre del archivo .txt a revisar (sin extensión): ").strip()
 archivo_entrada = f"{nombre_archivo}.txt"
-archivo_salida = f"{nombre_archivo}_modificado.txt"
+archivo_salida = f"{nombre_archivo}_limpiado.txt"
 archivo_log = f"{nombre_archivo}_log.txt"
 
 # === LECTURA ===
