@@ -1,14 +1,19 @@
 import re
 import os
 
-# === DICCIONARIO BÁSICO (puedes ampliarlo o cargarlo desde archivo) ===
-diccionario_es = {
-    "distancia", "transporte", "viajeros", "mercado", "servicio", "movilidad",
-    "contrato", "billete", "viaje", "seguridad", "cliente", "media", "larga",
-    "normativa", "plaza", "grupo", "personal", "documento", "acceso", "título",
-    "oferta", "coche", "clase", "asiento", "factura", "validez", "anulación",
-    "anterior", "posterior", "valor", "precio", "conductor", "renfe"
-}
+# === COLORES ===
+COLOR_BEGIN = "\033[1;33m"
+COLOR_END = "\033[0m"
+
+# === CARGAR DICCIONARIO EXTERNO ===
+diccionario_path = "diccionario.txt"
+if os.path.exists(diccionario_path):
+    with open(diccionario_path, 'r', encoding='utf-8') as f:
+        diccionario_es = set(p.strip().lower() for p in f if p.strip())
+    print(f"📘 Diccionario cargado con {len(diccionario_es)} palabras.")
+else:
+    diccionario_es = set()
+    print("⚠️ No se encontró el archivo 'diccionario.txt'. Se usará un diccionario vacío.")
 
 def palabra_valida(palabra):
     return palabra.lower() in diccionario_es
@@ -25,10 +30,6 @@ with open(archivo_entrada, 'r', encoding='utf-8') as f:
 
 nuevas_lineas = []
 log_modificaciones = []
-
-# Secuencia ANSI para resaltar (color amarillo en negrita)
-COLOR_BEGIN = "\033[1;33m"
-COLOR_END = "\033[0m"
 
 # === PROCESAMIENTO ===
 for i, linea in enumerate(lineas, 1):
