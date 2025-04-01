@@ -15,8 +15,12 @@ else:
     diccionario_es = set()
     print("⚠️ No se encontró el archivo 'diccionario.txt'. Se usará un diccionario vacío.")
 
+nuevas_lineas = []
+log_modificaciones = []
+palabras_aceptadas = set()
+
 def palabra_valida(palabra):
-    return palabra.lower() in diccionario_es
+    return palabra.lower() in diccionario_es or palabra.lower() in palabras_aceptadas
 
 # === ENTRADA ===
 nombre_archivo = input("Introduce el nombre del archivo .txt a revisar (sin extensión): ").strip()
@@ -27,9 +31,6 @@ archivo_log = f"{nombre_archivo}_log.txt"
 # === LECTURA ===
 with open(archivo_entrada, 'r', encoding='utf-8') as f:
     lineas = f.readlines()
-
-nuevas_lineas = []
-log_modificaciones = []
 
 # === PROCESAMIENTO ===
 for i, linea in enumerate(lineas, 1):
@@ -66,6 +67,7 @@ for i, linea in enumerate(lineas, 1):
             if decision == 'y':
                 linea_modificada = linea_modificada[:start] + propuesto + linea_modificada[end:]
                 offset -= len("- ")
+                palabras_aceptadas.add(palabra_completa.lower())
                 print("✔️ Eliminado.")
                 log_modificaciones.append(f"Línea {i}: {original_fragmento} → {palabra_completa}")
             else:
@@ -73,13 +75,28 @@ for i, linea in enumerate(lineas, 1):
 
     nuevas_lineas.append(linea_modificada)
 
-# === GUARDAR RESULTADOS ===
+# === GUARDAR ARCHIVO MODIFICADO ===
 with open(archivo_salida, 'w', encoding='utf-8') as f:
     f.writelines(nuevas_lineas)
 
+# === ACTUALIZAR DICCIONARIO ===
+if palabras_aceptadas:
+    palabras_totales = diccionario_es.union(palabras_aceptadas)
+    palabras_ordenadas = sorted(palabras_totales)
+    with open(diccionario_path, 'w', encoding='utf-8') as f:
+        for palabra in palabras_ordenadas:
+            f.write(palabra + '\n')
+
+# === GUARDAR LOG ===
 with open(archivo_log, 'w', encoding='utf-8') as f:
+    if palabras_aceptadas:
+        lista = ', '.join(sorted(palabras_aceptadas))
+        f.write(f"Palabras agregadas a diccionario.txt: {lista}\n\n")
     for entrada in log_modificaciones:
         f.write(entrada + '\n')
 
+# === MENSAJE FINAL ===
 print(f"\n✅ Archivo modificado guardado como: {archivo_salida}")
 print(f"📝 Log de cambios guardado como: {archivo_log}")
+if palabras_aceptadas:
+    print(f"📚 Palabras nuevas agregadas al diccionario: {', '.join(sorted(palabras_aceptadas))}")
