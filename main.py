@@ -26,6 +26,8 @@ def obtener_nombre_carpeta():
 def main():
     nombre_carpeta = obtener_nombre_carpeta()
 
+    os.makedirs("carpeta_trabajo", exist_ok=True)
+
     script_01.main(nombre_carpeta)
     script_02.main(nombre_archivo=nombre_carpeta)
     script_03.main(nombre_archivo=nombre_carpeta)
