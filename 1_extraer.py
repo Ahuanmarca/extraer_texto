@@ -10,7 +10,7 @@ register_heif_opener()
 nombre_carpeta = input("Introduce el nombre de la carpeta con las imágenes: ").strip()
 
 # Ruta a la carpeta (se asume que está en el mismo nivel que el script)
-carpeta_imagenes = os.path.join(os.getcwd(), nombre_carpeta)
+carpeta_imagenes = os.path.join(os.getcwd(), "imagenes_crudas", nombre_carpeta)
 
 # Verificar que la carpeta exista
 if not os.path.isdir(carpeta_imagenes):
@@ -18,8 +18,8 @@ if not os.path.isdir(carpeta_imagenes):
     exit(1)
 
 # Archivos de salida
-archivo_salida = os.path.join(os.getcwd(), f"{nombre_carpeta}_extraido.txt")
-archivo_log = os.path.join(os.getcwd(), f"{nombre_carpeta}.log")
+archivo_salida = os.path.join(os.getcwd(), f"carpeta_trabajo/{nombre_carpeta}_extraido.txt")
+archivo_log = os.path.join(os.getcwd(), f"carpeta_trabajo/{nombre_carpeta}.log")
 
 # Crear carpeta temporal para conversiones
 carpeta_temporal = os.path.join(os.getcwd(), f"__tmp_{nombre_carpeta}")

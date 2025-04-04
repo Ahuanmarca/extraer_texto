@@ -4,9 +4,9 @@ from collections import Counter
 
 # === ENTRADA ===
 nombre_archivo = input("Introduce el nombre del archivo .txt a procesar (sin extensión): ").strip()
-archivo_entrada = f"{nombre_archivo}.txt"
-archivo_salida = f"{nombre_archivo}_normalizado.txt"
-archivo_log = f"{nombre_archivo[:8]}.log"
+archivo_entrada = f"carpeta_trabajo/{nombre_archivo}_extraido.txt"
+archivo_salida = f"carpeta_trabajo/{nombre_archivo}_extraido_normalizado.txt"
+archivo_log = f"carpeta_trabajo/{nombre_archivo[:8]}.log"
 
 # === LECTURA ===
 with open(archivo_entrada, 'r', encoding='utf-8') as f:
