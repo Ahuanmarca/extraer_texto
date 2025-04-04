@@ -4,11 +4,12 @@ import os
 import shutil
 from pillow_heif import register_heif_opener
 
-def main():
+def main(nombre_carpeta=None):
     register_heif_opener()
 
-    # Preguntar al usuario el nombre de la carpeta
-    nombre_carpeta = input("Introduce el nombre de la carpeta con las imágenes: ").strip()
+    # Si no se ha pasado como argumento, preguntar al usuario el nombre de la carpeta
+    if not nombre_carpeta:
+        nombre_carpeta = input("Carpeta con las imágenes: ").strip()
 
     # Ruta a la carpeta (se asume que está en el mismo nivel que el script)
     carpeta_imagenes = os.path.join(os.getcwd(), "imagenes_crudas", nombre_carpeta)
@@ -89,6 +90,6 @@ def main():
 
     if errores > 0:
         print(f"📁 Revisa el log de errores en: {archivo_log}")
-    
+
 if __name__ == "__main__":
     main()

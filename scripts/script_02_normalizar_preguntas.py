@@ -2,9 +2,10 @@ import re
 import os
 from collections import Counter
 
-def main():
+def main(nombre_archivo=None):
     # === ENTRADA ===
-    nombre_archivo = input("Introduce el nombre del archivo .txt a procesar (sin extensión): ").strip()
+    if not nombre_archivo:
+        nombre_archivo = input("Archivo .txt a normalizar (sin extensión): ").strip()
     archivo_entrada = f"carpeta_trabajo/{nombre_archivo}_extr.txt"
     archivo_salida = f"carpeta_trabajo/{nombre_archivo}_extr_norm.txt"
     archivo_log = f"carpeta_trabajo/{nombre_archivo[:8]}.log"

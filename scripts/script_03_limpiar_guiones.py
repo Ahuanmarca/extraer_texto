@@ -1,7 +1,7 @@
 import re
 import os
 
-def main():
+def main(nombre_archivo=None):
     # === COLORES ===
     COLOR_BEGIN = "\033[1;33m"
     COLOR_END = "\033[0m"
@@ -24,7 +24,8 @@ def main():
         return palabra.lower() in diccionario_es or palabra.lower() in palabras_aceptadas
 
     # === ENTRADA ===
-    nombre_archivo = input("Introduce el nombre del archivo .txt a revisar (sin extensión): ").strip()
+    if not nombre_archivo:
+        nombre_archivo = input("Archivo .txt a limpiar (sin extensión): ").strip()
     archivo_entrada = f"carpeta_trabajo/{nombre_archivo}_extr_norm.txt"
     archivo_salida = f"carpeta_trabajo/{nombre_archivo}_extr_norm_limp.txt"
     archivo_log = f"carpeta_trabajo/{nombre_archivo[:8]}.log"
