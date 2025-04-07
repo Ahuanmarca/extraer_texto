@@ -28,7 +28,7 @@ def main(nombre_archivo=None):
         nombre_archivo = input("Archivo .txt a limpiar (sin extensión): ").strip()
     archivo_entrada = f"carpeta_trabajo/{nombre_archivo}_extr_norm.txt"
     archivo_salida = f"carpeta_trabajo/{nombre_archivo}_extr_norm_limp.txt"
-    archivo_log = f"carpeta_trabajo/{nombre_archivo[:8]}.log"
+    archivo_log = f"carpeta_trabajo/{nombre_archivo[:15]}.log"
 
     # === LECTURA ===
     with open(archivo_entrada, 'r', encoding='utf-8') as f:

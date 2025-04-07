@@ -5,7 +5,23 @@ from scripts import (
     script_01_extraer_preguntas as script_01,
     script_02_normalizar_preguntas as script_02,
     script_03_limpiar_guiones as script_03,
+    script_04_comprobar_formato as script_04,
 )
+
+def limpiar_archivos_con_prefijo(prefijo="imagenes_prueba"):
+    carpeta = "carpeta_trabajo"
+    if not os.path.exists(carpeta):
+        print("⚠️ La carpeta 'carpeta_trabajo/' no existe.")
+        return
+
+    archivos_eliminados = 0
+    for archivo in os.listdir(carpeta):
+        if archivo.startswith(prefijo):
+            ruta = os.path.join(carpeta, archivo)
+            os.remove(ruta)
+            archivos_eliminados += 1
+
+    print(f"🧹 Limpieza completada: {archivos_eliminados} archivo(s) eliminados que comienzan con '{prefijo}'.")
 
 def obtener_nombre_carpeta():
     # 1. Comprobar si se pasó como argumento
@@ -24,13 +40,19 @@ def obtener_nombre_carpeta():
 
 
 def main():
-    nombre_carpeta = obtener_nombre_carpeta()
 
+    if len(sys.argv) > 1 and sys.argv[1].strip().lower() == "clean":
+        prefijo = sys.argv[2].strip() if len(sys.argv) > 2 else "imagenes_prueba"
+        limpiar_archivos_con_prefijo(prefijo)
+        return
+
+    nombre_carpeta = obtener_nombre_carpeta()
     os.makedirs("carpeta_trabajo", exist_ok=True)
 
     script_01.main(nombre_carpeta)
     script_02.main(nombre_archivo=nombre_carpeta)
     script_03.main(nombre_archivo=nombre_carpeta)
+    script_04.main(nombre_archivo=nombre_carpeta)
 
 if __name__ == "__main__":
     main()
