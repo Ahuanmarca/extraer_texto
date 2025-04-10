@@ -1,15 +1,23 @@
 import re
 import os
 
+# === BASE_DIR: carpeta raíz del proyecto ===
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# === RUTAS RELATIVAS ===
+CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
+IMAGENES_CRUDAS = os.path.join(BASE_DIR, "imagenes_crudas")
+DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
+
 def main(nombre_archivo=None):
     # === COLORES ===
     COLOR_BEGIN = "\033[1;33m"
     COLOR_END = "\033[0m"
 
     # === CARGAR DICCIONARIO EXTERNO ===
-    diccionario_path = "diccionario.txt"
-    if os.path.exists(diccionario_path):
-        with open(diccionario_path, 'r', encoding='utf-8') as f:
+    # diccionario_path = "diccionario.txt"
+    if os.path.exists(DICCIONARIO_PATH):
+        with open(DICCIONARIO_PATH, 'r', encoding='utf-8') as f:
             diccionario_es = set(p.strip().lower() for p in f if p.strip())
         print(f"📘 Diccionario cargado con {len(diccionario_es)} palabras.")
     else:
@@ -26,9 +34,9 @@ def main(nombre_archivo=None):
     # === ENTRADA ===
     if not nombre_archivo:
         nombre_archivo = input("Archivo .txt a limpiar (sin extensión): ").strip()
-    archivo_entrada = f"carpeta_trabajo/{nombre_archivo}_extr_norm.txt"
-    archivo_salida = f"carpeta_trabajo/{nombre_archivo}_extr_norm_limp.txt"
-    archivo_log = f"carpeta_trabajo/{nombre_archivo[:15]}.log"
+    archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}_extr_norm.txt")
+    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}_extr_norm_limp.txt")
+    archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo[:15]}.log")
 
     # === LECTURA ===
     with open(archivo_entrada, 'r', encoding='utf-8') as f:
@@ -85,7 +93,7 @@ def main(nombre_archivo=None):
     if palabras_aceptadas:
         palabras_totales = diccionario_es.union(palabras_aceptadas)
         palabras_ordenadas = sorted(palabras_totales)
-        with open(diccionario_path, 'w', encoding='utf-8') as f:
+        with open(DICCIONARIO_PATH, 'w', encoding='utf-8') as f:
             for palabra in palabras_ordenadas:
                 f.write(palabra + '\n')
 

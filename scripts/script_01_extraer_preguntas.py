@@ -4,6 +4,14 @@ import os
 import shutil
 from pillow_heif import register_heif_opener
 
+# === BASE_DIR: carpeta raíz del proyecto ===
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# === RUTAS RELATIVAS ===
+CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
+IMAGENES_CRUDAS = os.path.join(BASE_DIR, "imagenes_crudas")
+DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
+
 def main(nombre_carpeta=None):
     register_heif_opener()
 
@@ -12,7 +20,7 @@ def main(nombre_carpeta=None):
         nombre_carpeta = input("Carpeta con las imágenes: ").strip()
 
     # Ruta a la carpeta (se asume que está en el mismo nivel que el script)
-    carpeta_imagenes = os.path.join(os.getcwd(), "imagenes_crudas", nombre_carpeta)
+    carpeta_imagenes = os.path.join(IMAGENES_CRUDAS, nombre_carpeta)
 
     # Verificar que la carpeta exista
     if not os.path.isdir(carpeta_imagenes):
@@ -20,8 +28,8 @@ def main(nombre_carpeta=None):
         exit(1)
 
     # Archivos de salida
-    archivo_salida = os.path.join(os.getcwd(), f"carpeta_trabajo/{nombre_carpeta}_extr.txt")
-    archivo_log = os.path.join(os.getcwd(), f"carpeta_trabajo/{nombre_carpeta}.log")
+    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_carpeta}_extr.txt")
+    archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_carpeta}.log")
 
     # Crear carpeta temporal para conversiones
     carpeta_temporal = os.path.join(os.getcwd(), f"__tmp_{nombre_carpeta}")

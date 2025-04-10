@@ -2,13 +2,21 @@ import re
 import os
 from collections import Counter
 
+# === BASE_DIR: carpeta raíz del proyecto ===
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# === RUTAS RELATIVAS ===
+CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
+IMAGENES_CRUDAS = os.path.join(BASE_DIR, "imagenes_crudas")
+DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
+
 def main(nombre_archivo=None):
     # === ENTRADA ===
     if not nombre_archivo:
         nombre_archivo = input("Archivo .txt a normalizar (sin extensión): ").strip()
-    archivo_entrada = f"carpeta_trabajo/{nombre_archivo}_extr.txt"
-    archivo_salida = f"carpeta_trabajo/{nombre_archivo}_extr_norm.txt"
-    archivo_log = f"carpeta_trabajo/{nombre_archivo[:15]}.log"
+    archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}_extr.txt")
+    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}_extr_norm.txt")
+    archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo[:15]}.log")
 
     # === LECTURA ===
     with open(archivo_entrada, 'r', encoding='utf-8') as f:
@@ -51,7 +59,6 @@ def main(nombre_archivo=None):
             errores.append(f"⚠️ Letras duplicadas ({', '.join(duplicadas)}): {pregunta_actual[:100]}")
 
         if errores:
-            nueva_lineas.append("-------- TO FIX --------")
             log_advertencias.extend(errores)
 
         nueva_lineas.append(pregunta_actual.strip())
