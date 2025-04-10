@@ -49,10 +49,16 @@ def main():
     nombre_carpeta = obtener_nombre_carpeta()
     os.makedirs("carpeta_trabajo", exist_ok=True)
 
-    script_01.main(nombre_carpeta)
-    script_02.main(nombre_archivo=nombre_carpeta)
-    script_03.main(nombre_archivo=nombre_carpeta)
-    script_04.main(nombre_archivo=nombre_carpeta)
+    # Nombres de archivos para cada script
+    nombre_archivo_log = nombre_carpeta[:-1]
+    nombre_salida_01 = nombre_carpeta + "_extr"             # filename_extr
+    nombre_salida_02 = nombre_carpeta + "_extr_norm"        # filename_extr_norm
+    nombre_salida_03 = nombre_carpeta + "_extr_norm_limp"   # filename_extr_norm_limp
+
+    script_01.main(nombre_carpeta, nombre_salida_01, nombre_archivo_log)
+    script_02.main(nombre_archivo=nombre_salida_01, nombre_salida=nombre_salida_02, nombre_archivo_log=nombre_archivo_log)
+    script_03.main(nombre_archivo=nombre_salida_02, nombre_salida=nombre_salida_03, nombre_archivo_log=nombre_archivo_log)
+    script_04.main(nombre_archivo=nombre_salida_03, nombre_archivo_log=nombre_archivo_log)
 
 if __name__ == "__main__":
     main()

@@ -12,12 +12,15 @@ CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
 IMAGENES_CRUDAS = os.path.join(BASE_DIR, "imagenes_crudas")
 DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
 
-def main(nombre_carpeta=None):
+def main(nombre_carpeta=None, nombre_salida=None, nombre_archivo_log=None):
     register_heif_opener()
 
     # Si no se ha pasado como argumento, preguntar al usuario el nombre de la carpeta
     if not nombre_carpeta:
         nombre_carpeta = input("Carpeta con las imágenes: ").strip()
+
+    if not nombre_salida:
+        nombre_salida = nombre_carpeta + "_ext"
 
     # Ruta a la carpeta (se asume que está en el mismo nivel que el script)
     carpeta_imagenes = os.path.join(IMAGENES_CRUDAS, nombre_carpeta)
@@ -28,8 +31,8 @@ def main(nombre_carpeta=None):
         exit(1)
 
     # Archivos de salida
-    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_carpeta}_extr.txt")
-    archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_carpeta}.log")
+    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
+    archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo_log}.log")
 
     # Crear carpeta temporal para conversiones
     carpeta_temporal = os.path.join(os.getcwd(), f"__tmp_{nombre_carpeta}")

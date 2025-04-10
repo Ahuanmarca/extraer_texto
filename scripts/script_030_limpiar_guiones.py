@@ -9,7 +9,7 @@ CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
 IMAGENES_CRUDAS = os.path.join(BASE_DIR, "imagenes_crudas")
 DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
 
-def main(nombre_archivo=None):
+def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     # === COLORES ===
     COLOR_BEGIN = "\033[1;33m"
     COLOR_END = "\033[0m"
@@ -34,9 +34,11 @@ def main(nombre_archivo=None):
     # === ENTRADA ===
     if not nombre_archivo:
         nombre_archivo = input("Archivo .txt a limpiar (sin extensión): ").strip()
-    archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}_extr_norm.txt")
-    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}_extr_norm_limp.txt")
-    archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo[:15]}.log")
+    if not nombre_salida:
+        nombre_salida = nombre_archivo + "_limp_test"
+    archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}.txt")
+    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
+    archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo_log}.log")
 
     # === LECTURA ===
     with open(archivo_entrada, 'r', encoding='utf-8') as f:

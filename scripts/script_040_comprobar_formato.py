@@ -1,12 +1,12 @@
 import re
 import os
 
-def main(nombre_archivo=None):
+def main(nombre_archivo=None, nombre_archivo_log=None):
     if not nombre_archivo:
         nombre_archivo = input("Nombre base del archivo (sin extensión): ").strip()
 
-    ruta_txt = f"carpeta_trabajo/{nombre_archivo}_extr_norm_limp.txt"
-    ruta_log = f"carpeta_trabajo/{nombre_archivo}.log"
+    ruta_txt = f"carpeta_trabajo/{nombre_archivo}.txt"
+    ruta_log = f"carpeta_trabajo/{nombre_archivo_log}.log"
 
     if not os.path.isfile(ruta_txt):
         print(f"❌ No se encontró el archivo: {ruta_txt}")
