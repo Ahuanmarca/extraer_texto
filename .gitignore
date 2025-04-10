@@ -3,3 +3,6 @@ __pycache__
 imagenes_crudas/*
 !imagenes_crudas/imagenes_prueba
 !imagenes_crudas/imagenes_prueba/**
+carpeta_trabajo/*
+!carpeta_trabajo/.keep
+TODO.txt

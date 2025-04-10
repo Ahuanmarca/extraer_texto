@@ -2,10 +2,10 @@ import os
 import sys
 
 from scripts import (
-    script_01_extraer_preguntas as script_01,
-    script_02_normalizar_preguntas as script_02,
-    script_03_limpiar_guiones as script_03,
-    script_04_comprobar_formato as script_04,
+    script_010_extraer_preguntas as script_01,
+    script_020_normalizar_preguntas as script_02,
+    script_030_limpiar_guiones as script_03,
+    script_040_comprobar_formato as script_04,
 )
 
 def limpiar_archivos_con_prefijo(prefijo="imagenes_prueba"):
