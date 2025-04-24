@@ -2,10 +2,11 @@ import os
 import sys
 
 from scripts import (
-    script_010_extraer_preguntas as script_01,
-    script_020_normalizar_preguntas as script_02,
-    script_030_limpiar_guiones as script_03,
-    script_040_comprobar_formato as script_04,
+    script_010_extraer_preguntas as script_010,
+    script_020_normalizar_preguntas as script_020,
+    script_030_limpiar_guiones as script_030,
+    script_040_comprobar_formato as script_040,
+    script_010_extraer_preguntas as script_110,
 )
 
 def limpiar_archivos_con_prefijo(prefijo="imagenes_prueba"):
@@ -49,16 +50,32 @@ def main():
     nombre_carpeta = obtener_nombre_carpeta()
     os.makedirs("carpeta_trabajo", exist_ok=True)
 
-    # Nombres de archivos para cada script
+    # Nombre de archivo log
     nombre_archivo_log = nombre_carpeta[:-1]
-    nombre_salida_01 = nombre_carpeta + "_extr"             # filename_extr
-    nombre_salida_02 = nombre_carpeta + "_extr_norm"        # filename_extr_norm
-    nombre_salida_03 = nombre_carpeta + "_extr_norm_limp"   # filename_extr_norm_limp
 
-    script_01.main(nombre_carpeta, nombre_salida_01, nombre_archivo_log)
-    script_02.main(nombre_archivo=nombre_salida_01, nombre_salida=nombre_salida_02, nombre_archivo_log=nombre_archivo_log)
-    script_03.main(nombre_archivo=nombre_salida_02, nombre_salida=nombre_salida_03, nombre_archivo_log=nombre_archivo_log)
-    script_04.main(nombre_archivo=nombre_salida_03, nombre_archivo_log=nombre_archivo_log)
+    # Nombres de archivos de trabajo
+    salida_01 = nombre_carpeta + "_010"             # filename_010
+    salida_02 = nombre_carpeta + "_020"             # filename_020
+    salida_03 = nombre_carpeta + "_030"             # filename_030
+
+    salida_11 = nombre_carpeta + "_110"             # filename_110
+
+    # Extraer texto de imágenes crudas
+    script_010.main(nombre_carpeta,             salida_01,                  nombre_archivo_log)
+    
+    # Normalizar estructura del texto
+    script_020.main(nombre_archivo=salida_01,   nombre_salida=salida_02,    nombre_archivo_log=nombre_archivo_log)
+    
+    # Limpiar palabras partidas con guiones
+    script_030.main(nombre_archivo=salida_02,   nombre_salida=salida_03,    nombre_archivo_log=nombre_archivo_log)
+    
+    # Buscar errores y marcarlos con "=== TO FIX ==="
+    script_040.main(nombre_archivo=salida_03,                               nombre_archivo_log=nombre_archivo_log)
+
+    # Extraer texto de imágenes crudas (de respuestas)
+    script_110.main(nombre_carpeta[:-1] + "B",  salida_11,                  nombre_archivo_log=nombre_archivo_log)
+
+    # 
 
 if __name__ == "__main__":
     main()

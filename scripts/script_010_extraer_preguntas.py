@@ -41,7 +41,7 @@ def main(nombre_carpeta=None, nombre_salida=None, nombre_archivo_log=None):
     # Limpiar archivos anteriores
     with open(archivo_salida, 'w', encoding='utf-8') as f:
         f.write('')
-    with open(archivo_log, 'w', encoding='utf-8') as f:
+    with open(archivo_log, 'a', encoding='utf-8') as f:
         f.write('Errores en extracción de imágenes:\n')
 
     # Contadores
