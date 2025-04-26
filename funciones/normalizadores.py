@@ -147,3 +147,51 @@ def insertar_linea_vacia_antes_numeracion(texto: str) -> str:
         nuevas_lineas.append(linea)
 
     return "\n".join(nuevas_lineas)
+
+
+def unir_oraciones_partidas(lineas: str) -> str:
+    """
+    Une líneas partidas que forman parte de la misma oración,
+    respetando reglas estrictas para no unir bloques que no deben.
+
+    Protecciones:
+    - No une si hay una línea vacía entre medio.
+    - No une si la siguiente línea empieza con comillas (" o “).
+    - No une si la línea actual termina en ciertos caracteres que indican fin de frase (. ? ! :).
+    """
+
+    caracteres_finales = {".", "?", "!", ":", ";"}  # Se pueden agregar más si quieres
+    resultado = []
+    buffer = ""
+    lineas = lineas.splitlines()
+
+    for idx, linea in enumerate(lineas):
+        linea_actual = linea.rstrip()
+
+        if not linea_actual:
+            # Si encontramos línea vacía, guardamos lo que tengamos en el buffer
+            if buffer:
+                resultado.append(buffer)
+                buffer = ""
+            resultado.append("")  # Conservamos la línea vacía
+            continue
+
+        if buffer:
+            # Si hay algo en el buffer, decidir si unir o no
+            if (not buffer[-1] in caracteres_finales) and (
+                not linea_actual.startswith(('"', "“"))
+            ):
+                # Unir la línea al buffer con espacio
+                buffer += " " + linea_actual
+            else:
+                # No unir, guardar lo que había
+                resultado.append(buffer)
+                buffer = linea_actual
+        else:
+            buffer = linea_actual
+
+    # Guardar lo último que quede en buffer
+    if buffer:
+        resultado.append(buffer)
+
+    return "\n".join(resultado)

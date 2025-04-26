@@ -4,6 +4,7 @@ from collections import Counter
 from funciones.normalizadores import corregir_numeracion_y_letras
 from funciones.normalizadores import corregir_letras_duplicadas
 from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
+from funciones.normalizadores import unir_oraciones_partidas
 
 # === BASE_DIR: carpeta raíz del proyecto ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -34,6 +35,9 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
 
     # === 4. INSERTAR LÍNEA VACÍA ENTRE CADA ITEM ===
     nuevas_lineas = insertar_linea_vacia_antes_numeracion(nuevas_lineas)
+    
+    # === 5. UNIR ORACIONES PARTIDAS ===
+    nuevas_lineas = unir_oraciones_partidas(nuevas_lineas)
     
     # === 6. GUARDAR RESULTADOS ===
     with open(archivo_salida, 'w', encoding='utf-8') as f:

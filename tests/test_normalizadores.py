@@ -2,6 +2,7 @@ import pytest
 from funciones.normalizadores import corregir_numeracion_y_letras
 from funciones.normalizadores import corregir_letras_duplicadas
 from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
+from funciones.normalizadores import unir_oraciones_partidas
 
 def test_corregir_numeracion_y_letras():
     texto_entrada = """
@@ -77,6 +78,25 @@ Texto final.
 
     resultado = insertar_linea_vacia_antes_numeracion(texto_entrada)
     assert resultado.strip() == texto_esperado
+
+
+def test_unir_oraciones_partidas():
+    texto_entrada = """Hola, me
+llamo Renzo.
+
+7. c) En servicios comerciales y servicios sujetos a obligaciones de servicio público
+“Desde el punto de vista tarifario. Renfe Viajeros estructura el servicio que ofrece a
+los viajeros en: servicios comerciales y servicios sujetos a obligaciones de servicio
+público”."""
+
+    texto_esperado = """Hola, me llamo Renzo.
+
+7. c) En servicios comerciales y servicios sujetos a obligaciones de servicio público
+“Desde el punto de vista tarifario. Renfe Viajeros estructura el servicio que ofrece a los viajeros en: servicios comerciales y servicios sujetos a obligaciones de servicio público”."""
+
+    resultado = unir_oraciones_partidas(texto_entrada)
+    assert resultado.strip() == texto_esperado.strip()
+
 
 if __name__ == "__main__":
     pytest.main()
