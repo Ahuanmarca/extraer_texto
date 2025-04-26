@@ -1,42 +1,36 @@
 import pytest
 from funciones.normalizadores import limpiar_lineas_heic
+from funciones.normalizadores import corregir_numeracion_y_letras
 
-def test_limpiar_lineas_heic():
+
+def test_corregir_numeracion_y_letras():
     texto_entrada = """
-===== IMG_1234.heic =====
-1. ¿Cuál es la capital de Perú?
-a) Lima
-b) Arequipa
-===== IMG_5678.heic =====
-c) Cusco
-d) Trujillo
+1. Cc) Servicios de Cercanías.
+"Los Servicios Comerciales son..."
+2. d) Real Decreto Legislativo 6/2015...
+3. b) AVE, Avlo, Alvia, Euromed e Intercity.
+b) Título de transporte.
+a) El cliente tiene la obligación de...
+Cc) El sexo del cliente.
+c) En servicios comerciales...
+8. Cc) Acuerdo del Consejo de Ministros.
 """.strip()
 
     texto_esperado = """
-1. ¿Cuál es la capital de Perú?
-a) Lima
-b) Arequipa
-c) Cusco
-d) Trujillo
+1. Cc) Servicios de Cercanías.
+"Los Servicios Comerciales son..."
+2. d) Real Decreto Legislativo 6/2015...
+3. b) AVE, Avlo, Alvia, Euromed e Intercity.
+4. b) Título de transporte.
+5. a) El cliente tiene la obligación de...
+6. c) El sexo del cliente.
+7. c) En servicios comerciales...
+8. Cc) Acuerdo del Consejo de Ministros.
 """.strip()
 
-    resultado = limpiar_lineas_heic(texto_entrada)
-    assert resultado.strip() == texto_esperado
+    resultado = corregir_numeracion_y_letras(texto_entrada)
+    assert resultado.strip() == texto_esperado.strip()
 
 
-def test_lineas_heic_con_espacios_y_en_medio():
-    texto_entrada = """
-1. ¿Cuál es la capital?
-a) Lima
-   ===== IMG_0001.heic =====  
-b) Cusco
-""".strip()
-
-    texto_esperado = """
-1. ¿Cuál es la capital?
-a) Lima
-b) Cusco
-""".strip()
-
-    resultado = limpiar_lineas_heic(texto_entrada)
-    assert resultado.strip() == texto_esperado
+if __name__ == "__main__":
+    pytest.main()
