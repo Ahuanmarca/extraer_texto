@@ -32,10 +32,6 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
         return palabra.lower() in diccionario_es or palabra.lower() in palabras_aceptadas
 
     # === ENTRADA ===
-    if not nombre_archivo:
-        nombre_archivo = input("Archivo .txt a limpiar (sin extensión): ").strip()
-    if not nombre_salida:
-        nombre_salida = nombre_archivo + "_limp_test"
     archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}.txt")
     archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
     archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo_log}.log")

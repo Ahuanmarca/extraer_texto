@@ -2,9 +2,6 @@ import re
 import os
 
 def main(nombre_archivo=None, nombre_archivo_log=None):
-    if not nombre_archivo:
-        nombre_archivo = input("Nombre base del archivo (sin extensión): ").strip()
-
     ruta_txt = f"carpeta_trabajo/{nombre_archivo}.txt"
     ruta_log = f"carpeta_trabajo/{nombre_archivo_log}.log"
 
