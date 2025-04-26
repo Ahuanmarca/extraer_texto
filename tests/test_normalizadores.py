@@ -1,7 +1,7 @@
 import pytest
 from funciones.normalizadores import corregir_numeracion_y_letras
 from funciones.normalizadores import corregir_letras_duplicadas
-
+from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 
 def test_corregir_numeracion_y_letras():
     texto_entrada = """
@@ -54,6 +54,29 @@ def test_corregir_letras_duplicadas():
     resultado = corregir_letras_duplicadas(texto_entrada)
     assert resultado.strip() == texto_esperado.strip()
 
+
+def test_insertar_linea_vacia_antes_numeracion():
+    texto_entrada = """1. c) Servicios de Cercanías.
+Texto cualquiera.
+2. d) Real Decreto Legislativo.
+Más texto aquí.
+8. c) Error de numeración (debería ignorarse).
+3. b) AVE, Avlo, Alvia, Euromed e Intercity.
+Texto final.
+"""
+    texto_esperado = """1. c) Servicios de Cercanías.
+Texto cualquiera.
+
+2. d) Real Decreto Legislativo.
+Más texto aquí.
+8. c) Error de numeración (debería ignorarse).
+
+3. b) AVE, Avlo, Alvia, Euromed e Intercity.
+Texto final.
+""".strip()
+
+    resultado = insertar_linea_vacia_antes_numeracion(texto_entrada)
+    assert resultado.strip() == texto_esperado
 
 if __name__ == "__main__":
     pytest.main()

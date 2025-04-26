@@ -3,6 +3,7 @@ import os
 from collections import Counter
 from funciones.normalizadores import corregir_numeracion_y_letras
 from funciones.normalizadores import corregir_letras_duplicadas
+from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 
 # === BASE_DIR: carpeta raíz del proyecto ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -30,8 +31,11 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
 
     # === 3. CORREGIR LETRAS RARAS / DUPLICADAS ===
     nuevas_lineas = corregir_letras_duplicadas(nuevas_lineas)
+
+    # === 4. INSERTAR LÍNEA VACÍA ENTRE CADA ITEM ===
+    nuevas_lineas = insertar_linea_vacia_antes_numeracion(nuevas_lineas)
     
-    # === 4. GUARDAR RESULTADOS ===
+    # === 6. GUARDAR RESULTADOS ===
     with open(archivo_salida, 'w', encoding='utf-8') as f:
         for linea in nuevas_lineas.splitlines():
             f.write(linea + '\n')
@@ -41,7 +45,7 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
         for advertencia in log_advertencias:
             f.write(advertencia + '\n')
 
-    # === 5. MENSAJE FINAL EN CONSOLA ===
+    # === 7. MENSAJE FINAL EN CONSOLA ===
     print(f"\n✅ Archivo normalizado guardado como: {archivo_salida}")
     print(f"📝 Log de advertencias guardado como: {archivo_log}")
 

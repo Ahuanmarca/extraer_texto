@@ -77,6 +77,7 @@ def corregir_numeracion_y_letras(texto: str) -> str:
 
     return "\n".join(resultado)
 
+
 # OJO, función diseñada para normalizar RESPUESTAS, pero podría funcionar OK
 # para normalizar preguntas, usándola en el momento correcto. TODO: ¡Probar!
 def corregir_letras_duplicadas(texto: str) -> str:
@@ -120,3 +121,29 @@ def corregir_letras_duplicadas(texto: str) -> str:
         resultado.append(linea)
 
     return "\n".join(resultado)
+
+
+def insertar_linea_vacia_antes_numeracion(texto: str) -> str:
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+    numero_esperado = 1
+    patron_numeracion = re.compile(r"^(\d+)\.\s?[a-zA-Z]?\)?")
+
+    for linea in lineas:
+        match = patron_numeracion.match(linea.strip())
+        if match:
+            numero_encontrado = int(match.group(1))
+            if numero_encontrado == numero_esperado:
+                if (
+                    numero_esperado != 1
+                ):  # No agregar línea vacía antes del primer número
+                    nuevas_lineas.append("")
+                nuevas_lineas.append(linea)
+                numero_esperado += 1
+                continue
+            else:
+                # Número fuera de orden: lo ignoramos (lo tratamos como línea normal)
+                pass
+        nuevas_lineas.append(linea)
+
+    return "\n".join(nuevas_lineas)
