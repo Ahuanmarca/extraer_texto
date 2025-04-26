@@ -2,23 +2,13 @@ import re
 import os
 from collections import Counter
 from funciones.normalizadores import corregir_numeracion_y_letras
+from funciones.normalizadores import corregir_letras_duplicadas
 
 # === BASE_DIR: carpeta raíz del proyecto ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 # === RUTAS RELATIVAS ===
 CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
-
-# def normalizar_opcion(linea):
-#     """
-#     Detecta opciones tipo 'a)', 'b)', etc., con ruido (espacios, guiones) y devuelve formato limpio.
-#     """
-#     match = re.match(r'^[\-\s]*([a-dA-D])[a-dA-D]?\)+\s*(.*)', linea)
-#     if match:
-#         letra = match.group(1).lower()
-#         texto = match.group(2).strip()
-#         return f"{letra}) {texto}", letra
-#     return None, None
 
 def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}.txt")
@@ -32,11 +22,14 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     # === 1. ELIMINAR LÍNEAS CON REFERENCIAS A IMÁGENES ===
     lineas = [l for l in lineas if not ("===== IMG_" in l and ".heic =====" in l)]
 
+    nuevas_lineas = "\n".join(lineas)
     log_advertencias = [ "TODO" ]
 
     # === 2. AGREGAR NUMERACIÓN FALTANTE ===
-    nuevas_lineas = corregir_numeracion_y_letras("\n".join(lineas))
+    nuevas_lineas = corregir_numeracion_y_letras(nuevas_lineas)
 
+    # === 3. CORREGIR LETRAS RARAS / DUPLICADAS ===
+    nuevas_lineas = corregir_letras_duplicadas(nuevas_lineas)
     
     # === 4. GUARDAR RESULTADOS ===
     with open(archivo_salida, 'w', encoding='utf-8') as f:

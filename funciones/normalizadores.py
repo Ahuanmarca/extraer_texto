@@ -1,5 +1,6 @@
 import re
 
+
 def limpiar_lineas_heic(texto):
     """
     Elimina líneas con nombres de imagen como '===== IMG_XXXX.heic ====='.
@@ -14,6 +15,8 @@ def limpiar_lineas_heic(texto):
     return "\n".join(lineas_filtradas)
 
 
+# Agregar numeración faltante a RESPUESTAS extraídas de imágenes crudas
+# ... no usar para normalizar las preguntas, posiblemente funcione mal
 def corregir_numeracion_y_letras(texto: str) -> str:
     lineas = texto.splitlines()
 
@@ -71,5 +74,49 @@ def corregir_numeracion_y_letras(texto: str) -> str:
 
         resultado.append(linea)
         i += 1
+
+    return "\n".join(resultado)
+
+# OJO, función diseñada para normalizar RESPUESTAS, pero podría funcionar OK
+# para normalizar preguntas, usándola en el momento correcto. TODO: ¡Probar!
+def corregir_letras_duplicadas(texto: str) -> str:
+    """
+    Corrige errores de letras duplicadas (como 'Cc)') justo después de una numeración.
+    La numeración debe ser secuencial (1., 2., 3., etc.) para aplicar la corrección.
+    """
+    lineas = texto.splitlines()
+    resultado = []
+    numeracion_esperada = None  # Comienza sin numeración previa
+
+    patron_numeracion = re.compile(r"^(\d+)\.\s*([a-zA-Z]{1,2})\)")
+
+    for linea in lineas:
+        match = patron_numeracion.match(linea.strip())
+
+        if match:
+            numero_actual = int(match.group(1))
+            letras = match.group(2)
+
+            # Si es la primera numeración encontrada, inicializar numeración esperada
+            if numeracion_esperada is None:
+                numeracion_esperada = numero_actual
+
+            # Solo corregir si el número es el esperado
+            if numero_actual == numeracion_esperada:
+                # Corregir si hay dos letras (ej: Cc), Aa), etc.)
+                if len(letras) > 1:
+                    letra_corregida = letras[-1].lower()
+                    linea = re.sub(
+                        r"^(\d+\.\s*)[a-zA-Z]{1,2}\)",
+                        r"\1" + letra_corregida + ")",
+                        linea,
+                    )
+
+                numeracion_esperada += 1  # Esperar el siguiente número
+            else:
+                # Si no es el número esperado, no corregir nada, pero actualizar
+                numeracion_esperada = numero_actual + 1
+
+        resultado.append(linea)
 
     return "\n".join(resultado)
