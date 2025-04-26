@@ -1,4 +1,10 @@
 import re
+import os
+
+# === BASE_DIR: carpeta raíz del proyecto ===
+# Rutas usadas por unir_palabras_partidas_por_guiones
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
 
 
 def limpiar_lineas_heic(texto):
@@ -195,3 +201,89 @@ def unir_oraciones_partidas(lineas: str) -> str:
         resultado.append(buffer)
 
     return "\n".join(resultado)
+
+
+def unir_palabras_partidas_por_guiones(texto: str) -> str:
+    """
+    Une palabras partidas por guiones, validando con un diccionario.
+    Pregunta al usuario si no está seguro.
+    """
+
+    # === Cargar diccionario externo ===
+    if os.path.exists(DICCIONARIO_PATH):
+        with open(DICCIONARIO_PATH, "r", encoding="utf-8") as f:
+            diccionario_es = set(p.strip().lower() for p in f if p.strip())
+    else:
+        diccionario_es = set()
+
+    palabras_aceptadas = set()
+
+    # === Función auxiliar ===
+    def palabra_valida(palabra):
+        return (
+            palabra.lower() in diccionario_es or palabra.lower() in palabras_aceptadas
+        )
+
+    # === Variables internas ===
+    COLOR_BEGIN = "\033[1;33m"
+    COLOR_END = "\033[0m"
+    nuevas_lineas = []
+
+    lineas = texto.splitlines()
+
+    for i, linea in enumerate(lineas, 1):
+        ocurrencias = list(re.finditer(r"(\w+)-\s(\w+)", linea))
+        if not ocurrencias:
+            nuevas_lineas.append(linea)
+            continue
+
+        linea_modificada = linea
+        offset = 0
+
+        for match in ocurrencias:
+            palabra1, palabra2 = match.group(1), match.group(2)
+            palabra_completa = palabra1 + palabra2
+
+            start = match.start() + offset
+            end = match.end() + offset
+            original_fragmento = linea_modificada[start:end]
+            propuesto = palabra_completa
+
+            resaltado_original = f"{COLOR_BEGIN}{original_fragmento}{COLOR_END}"
+            resaltado_modificado = f"{COLOR_BEGIN}{propuesto}{COLOR_END}"
+
+            if palabra_valida(palabra_completa):
+                linea_modificada = (
+                    linea_modificada[:start] + propuesto + linea_modificada[end:]
+                )
+                offset -= len("- ")
+                print(
+                    f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)"
+                )
+            else:
+                print(f"\nLínea {i}:")
+                print(f"Opción A (eliminar '- '): {resaltado_modificado}")
+                print(f"Opción B (mantener '- '): {resaltado_original}")
+                decision = input("¿Eliminar '- '? (y/n) [n]: ").strip().lower()
+                if decision == "y":
+                    linea_modificada = (
+                        linea_modificada[:start] + propuesto + linea_modificada[end:]
+                    )
+                    offset -= len("- ")
+                    palabras_aceptadas.add(palabra_completa.lower())
+                    print("✔️ Eliminado.")
+                else:
+                    print("⏩ Mantenido.")
+
+        nuevas_lineas.append(linea_modificada)
+
+    # === Guardar nuevas palabras al diccionario.txt si corresponde ===
+    if palabras_aceptadas:
+        palabras_totales = diccionario_es.union(palabras_aceptadas)
+        palabras_ordenadas = sorted(palabras_totales)
+        with open(DICCIONARIO_PATH, "w", encoding="utf-8") as f:
+            for palabra in palabras_ordenadas:
+                f.write(palabra + "\n")
+
+    # === Resultado final ===
+    return "\n".join(nuevas_lineas)

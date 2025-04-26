@@ -3,6 +3,8 @@ from funciones.normalizadores import corregir_numeracion_y_letras
 from funciones.normalizadores import corregir_letras_duplicadas
 from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 from funciones.normalizadores import unir_oraciones_partidas
+from funciones.normalizadores import unir_palabras_partidas_por_guiones
+
 
 def test_corregir_numeracion_y_letras():
     texto_entrada = """
@@ -95,6 +97,31 @@ público”."""
 “Desde el punto de vista tarifario. Renfe Viajeros estructura el servicio que ofrece a los viajeros en: servicios comerciales y servicios sujetos a obligaciones de servicio público”."""
 
     resultado = unir_oraciones_partidas(texto_entrada)
+    assert resultado.strip() == texto_esperado.strip()
+
+
+# Vamos a "simular" el input del usuario para los tests
+# usando un mock (parcheo de la función built-in input)
+
+
+def test_unir_palabras_partidas_por_guiones(monkeypatch):
+    texto_entrada = (
+        "Este es un ejemplo públi- cos de palabras par- tidas.\n"
+        "Aquí hay más tan- to errores.\n"
+        "Aquí NO hay errores.\n"
+    )
+
+    # Simulamos siempre responder 'y' (yes) cuando pregunte
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+
+    texto_esperado = (
+        "Este es un ejemplo públicos de palabras partidas.\n"
+        "Aquí hay más tanto errores.\n"
+        "Aquí NO hay errores.\n"
+    )
+
+    resultado = unir_palabras_partidas_por_guiones(texto_entrada)
+
     assert resultado.strip() == texto_esperado.strip()
 
 
