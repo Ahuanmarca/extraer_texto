@@ -1,10 +1,13 @@
-import re
 import os
+import re
+import json
 
 # === BASE_DIR: carpeta raíz del proyecto ===
 # Rutas usadas por unir_palabras_partidas_por_guiones
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
+CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
+RECHAZADAS_PATH = os.path.join(BASE_DIR, "rechazadas.json")
 
 
 def limpiar_lineas_heic(texto):
@@ -153,6 +156,13 @@ def corregir_numeracion_y_letras(texto: str) -> str:
             if match_opcion:
                 letra = match_opcion.group(1).lower()[-1]  # tomar última letra válida
                 if letra in "abcd":
+
+                    # <<<< TODO: Hacer esta funcionalidad configurable !!!!
+                    # <<<< EXCEPCIÓN PARA NUMERACIÓN DE RESPUESTAS DE PREGUNTAS DE RESERVA
+                    # if numero_en_progreso <= 4 and bloque_actual == 60:
+                    # numero_en_progreso += 60
+                    # <<<< FIN DE EXCEPCIÓN
+
                     nueva_linea = f"{numero_en_progreso}. {letra}) {linea.strip()[len(match_opcion.group(0)):].strip()}"
                     resultado.append(nueva_linea)
                     numero_en_progreso += 1
@@ -288,22 +298,32 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
     """
     Une palabras partidas por guiones, validando con un diccionario.
     Pregunta al usuario si no está seguro.
+    Maneja también un registro de palabras rechazadas.
     """
 
-    # === Cargar diccionario externo ===
+    # === Cargar diccionarios externos ===
     if os.path.exists(DICCIONARIO_PATH):
         with open(DICCIONARIO_PATH, "r", encoding="utf-8") as f:
             diccionario_es = set(p.strip().lower() for p in f if p.strip())
     else:
         diccionario_es = set()
 
+    if os.path.exists(RECHAZADAS_PATH):
+        with open(RECHAZADAS_PATH, "r", encoding="utf-8") as f:
+            palabras_rechazadas = json.load(f)
+    else:
+        palabras_rechazadas = {}
+
     palabras_aceptadas = set()
 
-    # === Función auxiliar ===
+    # === Funciones auxiliares ===
     def palabra_valida(palabra):
         return (
             palabra.lower() in diccionario_es or palabra.lower() in palabras_aceptadas
         )
+
+    def fragmento_rechazado(fragmento):
+        return palabras_rechazadas.get(fragmento, 0) >= 3
 
     # === Variables internas ===
     COLOR_BEGIN = "\033[1;33m"
@@ -327,7 +347,9 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
 
             start = match.start() + offset
             end = match.end() + offset
-            original_fragmento = linea_modificada[start:end]
+            original_fragmento = linea_modificada[
+                start:end
+            ]  # ← este fragmento es el que vamos a guardar
             propuesto = palabra_completa
 
             resaltado_original = f"{COLOR_BEGIN}{original_fragmento}{COLOR_END}"
@@ -341,6 +363,11 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
                 print(
                     f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)"
                 )
+
+            elif fragmento_rechazado(original_fragmento):
+                print(f"⏩ Línea {i}: {resaltado_original} (rechazo automático)")
+                # No hacemos nada, mantenemos la palabra partida
+
             else:
                 print(f"\nLínea {i}:")
                 print(f"Opción A (eliminar '- '): {resaltado_modificado}")
@@ -354,17 +381,24 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
                     palabras_aceptadas.add(palabra_completa.lower())
                     print("✔️ Eliminado.")
                 else:
+                    palabras_rechazadas[original_fragmento] = (
+                        palabras_rechazadas.get(original_fragmento, 0) + 1
+                    )
                     print("⏩ Mantenido.")
 
         nuevas_lineas.append(linea_modificada)
 
-    # === Guardar nuevas palabras al diccionario.txt si corresponde ===
+    # === Guardar nuevas palabras aceptadas ===
     if palabras_aceptadas:
         palabras_totales = diccionario_es.union(palabras_aceptadas)
         palabras_ordenadas = sorted(palabras_totales)
         with open(DICCIONARIO_PATH, "w", encoding="utf-8") as f:
             for palabra in palabras_ordenadas:
                 f.write(palabra + "\n")
+
+    # === Guardar el registro actualizado de rechazadas ===
+    with open(RECHAZADAS_PATH, "w", encoding="utf-8") as f:
+        json.dump(palabras_rechazadas, f, ensure_ascii=False, indent=2)
 
     # === Resultado final ===
     return "\n".join(nuevas_lineas)

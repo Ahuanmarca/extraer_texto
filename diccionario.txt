@@ -215,6 +215,7 @@ supervisión
 tamaño
 tanto
 tarjeta
+texto
 traducida
 transporte
 turísticos

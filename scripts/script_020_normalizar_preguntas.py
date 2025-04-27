@@ -2,11 +2,13 @@
 import re
 import os
 from collections import Counter
+from funciones.normalizadores import unir_palabras_partidas_por_guiones
 
 # === BASE_DIR Y RUTAS ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
 DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
+
 
 # === FUNCIONES AUXILIARES ===
 def leer_texto(nombre_archivo):
@@ -15,10 +17,16 @@ def leer_texto(nombre_archivo):
         texto = f.read()
     return texto
 
+
 def eliminar_referencias_imagen(texto):
     lineas = texto.splitlines()
-    lineas_filtradas = [linea for linea in lineas if not ("===== IMG_" in linea and ".heic =====" in linea)]
+    lineas_filtradas = [
+        linea
+        for linea in lineas
+        if not ("===== IMG_" in linea and ".heic =====" in linea)
+    ]
     return "\n".join(lineas_filtradas)
+
 
 def corregir_letras_opciones(texto):
     def corregir_linea(linea):
@@ -33,6 +41,7 @@ def corregir_letras_opciones(texto):
     lineas_corregidas = [corregir_linea(linea) for linea in lineas]
     return "\n".join(lineas_corregidas)
 
+
 def detectar_y_normalizar_preguntas(texto):
     nuevas_lineas = []
     log_advertencias = []
@@ -46,12 +55,16 @@ def detectar_y_normalizar_preguntas(texto):
 
         errores = []
         if len(opciones_actuales) != 4:
-            errores.append(f"⚠️ Pregunta con {len(opciones_actuales)} respuestas: {pregunta_actual[:100]}")
+            errores.append(
+                f"⚠️ Pregunta con {len(opciones_actuales)} respuestas: {pregunta_actual[:100]}"
+            )
 
         letra_counts = Counter(letras_actuales)
         duplicadas = [letra for letra, count in letra_counts.items() if count > 1]
         if duplicadas:
-            errores.append(f"⚠️ Letras duplicadas ({', '.join(duplicadas)}): {pregunta_actual[:100]}")
+            errores.append(
+                f"⚠️ Letras duplicadas ({', '.join(duplicadas)}): {pregunta_actual[:100]}"
+            )
 
         if errores:
             log_advertencias.extend(errores)
@@ -94,10 +107,12 @@ def detectar_y_normalizar_preguntas(texto):
     texto_normalizado = "\n".join(nuevas_lineas)
     return texto_normalizado, log_advertencias
 
+
 def guardar_resultado(texto, nombre_salida):
     ruta = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
     with open(ruta, "w", encoding="utf-8") as f:
         f.write(texto)
+
 
 def guardar_log(advertencias, nombre_archivo_log):
     ruta = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo_log}.log")
@@ -105,6 +120,7 @@ def guardar_log(advertencias, nombre_archivo_log):
         f.write("\nAdvertencias en proceso de normalización:\n")
         for advertencia in advertencias:
             f.write(advertencia + "\n")
+
 
 # === MAIN ===
 def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
@@ -124,12 +140,16 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     # === 4. DETECTAR Y NORMALIZAR PREGUNTAS Y OPCIONES ===
     texto, advertencias = detectar_y_normalizar_preguntas(texto)
 
+    # === 5. UNIR PALABRAS PARTIDAS POR GUIONES ===
+    texto = unir_palabras_partidas_por_guiones(texto)
+
     # === 5. GUARDAR RESULTADO Y LOG ===
     guardar_resultado(texto, nombre_salida)
     guardar_log(advertencias, nombre_archivo_log)
 
     print(f"\n✅ Archivo normalizado guardado como: {nombre_salida}.txt")
     print(f"📝 Log de advertencias guardado como: {nombre_archivo_log}.log")
+
 
 if __name__ == "__main__":
     main()

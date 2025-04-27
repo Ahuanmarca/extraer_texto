@@ -4,7 +4,6 @@ import sys
 from scripts import (
     script_010_extraer_preguntas as script_010,
     script_020_normalizar_preguntas as script_020,
-    script_030_limpiar_guiones as script_030,
     script_040_comprobar_formato as script_040,
     script_010_extraer_preguntas as script_110,
     script_120_normalizar_respuestas as script_120,
@@ -37,7 +36,6 @@ def main():
     # Nombres de archivos de trabajo
     salida_01 = nombre_carpeta + "_010"  # filename_010
     salida_02 = nombre_carpeta + "_020"  # filename_020
-    salida_03 = nombre_carpeta + "_030"  # filename_030
 
     salida_11 = nombre_carpeta + "_110"  # filename_110
     salida_12 = nombre_carpeta + "_120"  # filename_120
@@ -52,15 +50,8 @@ def main():
         nombre_archivo_log=nombre_archivo_log,
     )
 
-    # Limpiar palabras partidas con guiones
-    script_030.main(
-        nombre_archivo=salida_02,
-        nombre_salida=salida_03,
-        nombre_archivo_log=nombre_archivo_log,
-    )
-
     # Buscar errores y marcarlos con "=== TO FIX ==="
-    script_040.main(nombre_archivo=salida_03, nombre_archivo_log=nombre_archivo_log)
+    script_040.main(nombre_archivo=salida_02, nombre_archivo_log=nombre_archivo_log)
 
     # Extraer texto de imágenes crudas (de respuestas)
     script_110.main(
