@@ -7,6 +7,7 @@ from funciones.normalizadores import corregir_letras_duplicadas
 from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 from funciones.normalizadores import unir_oraciones_partidas
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
+from funciones.normalizadores import reemplazar_texto_por_linea_vacia
 
 DEBUG = True
 
@@ -49,6 +50,11 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     nuevas_lineas = insertar_linea_vacia_antes_numeracion(nuevas_lineas)
     if DEBUG:
         guardar_texto_con_timestamp(nuevas_lineas, "insertar_lineas")
+
+    # === 4b. INSERTAR LÍNEA VACÍA EN "Preguntas de reserva" ===
+    nuevas_lineas = reemplazar_texto_por_linea_vacia(nuevas_lineas, "Preguntas de reserva")
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "limpiar_str_preguntas_reserva")
 
     # === 5. UNIR ORACIONES PARTIDAS ===
     nuevas_lineas = unir_oraciones_partidas(nuevas_lineas)
