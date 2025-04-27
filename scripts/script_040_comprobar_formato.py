@@ -1,52 +1,81 @@
 import re
 import os
 
-
 def main(texto: str, nombre_archivo_log=None) -> str:
     ruta_log = f"carpeta_trabajo/{nombre_archivo_log}.log"
 
-    bloques = re.split(r'\n(?=\d{1,2}\. )', texto)
+    lineas = texto.splitlines()
     bloques_marcados = []
     problemas = []
     orden_incorrecto = []
     numeros_detectados = []
 
-    for bloque in bloques:
-        bloque = bloque.strip()
-        if not bloque:
+    i = 0
+    while i < len(lineas):
+        linea = lineas[i].strip()
+
+        if not linea:
+            i += 1
             continue
 
-        match_num = re.match(r'^(\d{1,2})\.', bloque)
-        if not match_num:
-            bloques_marcados.append(bloque)
+        # Detectar si es respuesta (ej: 2. a) Lorem Ipsum.)
+        match_respuesta = re.match(r"^(\d+)\.\s*[a-dA-D]\)", linea)
+
+        # Detectar si es pregunta (ej: 2. Lorem Ipsum?)
+        match_pregunta = re.match(r"^(\d+)\.\s+", linea)
+
+        if match_respuesta:
+            # Es una respuesta, copiar el bloque tal cual
+            bloque = []
+            while i < len(lineas):
+                bloque.append(lineas[i])
+                i += 1
+                if i < len(lineas):
+                    siguiente = lineas[i].strip()
+                    if re.match(r"^\d+\.", siguiente):
+                        break
+            bloques_marcados.append("\n".join(bloque))
             continue
 
-        numero = int(match_num.group(1))
-        numeros_detectados.append(numero)
+        elif match_pregunta:
+            # Es una pregunta, analizar el bloque
+            numero = int(match_pregunta.group(1))
+            numeros_detectados.append(numero)
 
-        # Buscar las opciones tipo a) b) c) d) al final de línea
-        opciones = re.findall(r'^([abcd])\) .+\.$', bloque, flags=re.MULTILINE)
+            bloque = []
+            while i < len(lineas):
+                bloque.append(lineas[i])
+                i += 1
+                if i < len(lineas):
+                    siguiente = lineas[i].strip()
+                    if re.match(r"^\d+\.", siguiente):
+                        break
 
-        error_detectado = False
+            bloque_texto = "\n".join(bloque)
 
-        # Comprobar cantidad de opciones
-        if len(opciones) != 4:
-            problemas.append(
-                f"❌ Pregunta {numero}: {len(opciones)} opciones encontradas"
-            )
-            error_detectado = True
+            # Buscar las opciones a), b), c), d)
+            opciones = re.findall(r"^[\-\s]*([abcd])\)", bloque_texto, flags=re.MULTILINE)
 
-        elif opciones != ["a", "b", "c", "d"]:
-            orden_incorrecto.append(
-                f"🔀 Pregunta {numero}: orden incorrecto de opciones → {opciones}"
-            )
-            error_detectado = True
+            error_detectado = False
 
-        # Si hay errores, insertar línea de aviso
-        if error_detectado:
-            bloques_marcados.append("---------- TO FIX ----------\n" + bloque)
+            if len(opciones) != 4:
+                problemas.append(f"❌ Pregunta {numero}: {len(opciones)} opciones encontradas")
+                error_detectado = True
+            elif opciones != ["a", "b", "c", "d"]:
+                orden_incorrecto.append(f"🔀 Pregunta {numero}: orden incorrecto de opciones → {opciones}")
+                error_detectado = True
+
+            if error_detectado:
+                bloques_marcados.append("---------- TO FIX ----------\n" + bloque_texto)
+            else:
+                bloques_marcados.append(bloque_texto)
+
+            continue
+
         else:
-            bloques_marcados.append(bloque)
+            # Si la línea no es pregunta ni respuesta, agregarla igual
+            bloques_marcados.append(linea)
+            i += 1
 
     # === Validación de numeración general ===
     errores_numeracion = []
@@ -94,7 +123,7 @@ def main(texto: str, nombre_archivo_log=None) -> str:
                     log.write(e + "\n")
             else:
                 log.write(
-                    "✅ La numeración de preguntas es correcta (1–60 y luego 1–4).\n"
+                    "✅ La numeración de preguntas es correcta (1–64).\n"
                 )
 
     # === Mostrar resumen en consola ===
@@ -113,15 +142,4 @@ def main(texto: str, nombre_archivo_log=None) -> str:
 
     print("📄 Detalles registrados en el log.")
 
-    # === Devolver el texto corregido ===
     return "\n\n".join(bloques_marcados)
-
-
-# Ejemplo de uso:
-if __name__ == "__main__":
-    texto_entrada = """1. a) Algo.\nb) Otro.\nc) Más.\nd) Último.\n2. a) Error."""
-    texto_corregido = main(
-        texto_entrada, nombre_archivo_log="log_revision"
-    )
-    print("\n--- TEXTO CORREGIDO ---\n")
-    print(texto_corregido)

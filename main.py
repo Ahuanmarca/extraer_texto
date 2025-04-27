@@ -58,17 +58,6 @@ def main():
     if DEBUG:
         guardar_texto_con_timestamp(texto_preguntas, "02_normalizar_preguntas")
 
-    # TODO: Reubicar el marcado de errores
-    # Hacerlo después de combinar preguntas y respuestas
-    # Al tenerlo aquí está generando problemas enla combinación
-
-    # Buscar errores y marcarlos con "=== TO FIX ==="
-    # texto_preguntas = script_040.main(
-        # texto_preguntas, nombre_archivo_log=nombre_archivo_log
-    # )
-    # if DEBUG:
-        # guardar_texto_con_timestamp(texto_preguntas, "03_marcar_errores")
-
     # Extraer texto de imágenes crudas (de respuestas)
     texto_respuestas = script_110.main(
         nombre_carpeta[:-1] + "B", nombre_archivo_log=nombre_archivo_log
@@ -87,8 +76,25 @@ def main():
     # Combinar preguntas y respuesta en un único archivo
     preguntas_respuestas = script_210.main(texto_preguntas, texto_respuestas)
     if DEBUG:
-        guardar_texto_con_timestamp(preguntas_respuestas, "preguntas_respuestas")
-    # TODO: Guardar archivo usando nombre de carpeta original + ".txt"
+        guardar_texto_con_timestamp(preguntas_respuestas, "06_preguntas_respuestas")
+
+    # Buscar errores y marcarlos con "=== TO FIX ==="
+    preguntas_respuestas = script_040.main(
+        preguntas_respuestas, nombre_archivo_log=nombre_archivo_log
+    )
+    if DEBUG:
+        guardar_texto_con_timestamp(preguntas_respuestas, "07_marcar_errores")
+
+    # === GUARDAR ARCHIVO FINAL ===
+    output_dir = os.path.join("carpeta_trabajo", "output")
+    os.makedirs(output_dir, exist_ok=True)
+
+    ruta_salida_final = os.path.join(output_dir, f"{nombre_carpeta}.txt")
+
+    with open(ruta_salida_final, "w", encoding="utf-8") as f:
+        f.write(preguntas_respuestas)
+
+    print(f"\n✅ Archivo final guardado en: {ruta_salida_final}")
 
 
 if __name__ == "__main__":
