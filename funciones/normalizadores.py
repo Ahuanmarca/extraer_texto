@@ -21,6 +21,23 @@ def limpiar_lineas_heic(texto):
     return "\n".join(lineas_filtradas)
 
 
+def insertar_espacio_entre_punto_y_letra(texto: str) -> str:
+    """
+    Inserta un espacio después del punto en numeraciones tipo '1.a)', '24.c)', etc.
+    No modifica nada más en el texto.
+    """
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+
+    patron = re.compile(r"^(\d+)\.([a-dA-D]\))")  # Número, punto, letra y paréntesis
+
+    for linea in lineas:
+        nueva_linea = patron.sub(r"\1. \2", linea)
+        nuevas_lineas.append(nueva_linea)
+
+    return "\n".join(nuevas_lineas)
+
+
 def reemplazar_texto_por_linea_vacia(texto, texto_objetivo):
     """
     Reemplaza ocurrencias de un marcador en el texto por una línea vacía.

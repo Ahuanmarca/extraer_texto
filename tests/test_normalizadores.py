@@ -5,6 +5,7 @@ from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 from funciones.normalizadores import unir_oraciones_partidas
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
 from funciones.normalizadores import reemplazar_texto_por_linea_vacia
+from funciones.normalizadores import insertar_espacio_entre_punto_y_letra
 
 
 def test_corregir_numeracion_y_letras():
@@ -156,6 +157,32 @@ def test_reemplazar_texto_por_linea_vacia():
     texto = "A\n\nPreguntas de reserva\n\nB"
     esperado = "A\n\n\n\nB"
     assert reemplazar_texto_por_linea_vacia(texto, "Preguntas de reserva") == esperado
+
+
+def test_insertar_espacio_entre_punto_y_letra():
+    # Casos que deberían ser corregidos
+    texto_entrada = "1.a) Lorem Ipsum\n24.c) Hello World\n60.b) Otro texto"
+    texto_esperado = "1. a) Lorem Ipsum\n24. c) Hello World\n60. b) Otro texto"
+    assert (
+        insertar_espacio_entre_punto_y_letra(texto_entrada).rstrip()
+        == texto_esperado.rstrip()
+    )
+
+    # Casos que NO deberían ser modificados
+    texto_entrada_no_cambiar = "2.Lorem Ipsum\n15.Otra frase\n5. Hello World"
+    texto_esperado_no_cambiar = "2.Lorem Ipsum\n15.Otra frase\n5. Hello World"
+    assert (
+        insertar_espacio_entre_punto_y_letra(texto_entrada_no_cambiar).rstrip()
+        == texto_esperado_no_cambiar.rstrip()
+    )
+
+    # Mezcla de corregibles y no corregibles
+    texto_entrada_mixto = "1.a) Primera\n2.Lorem Ipsum\n3.b) Segunda\n4.Hola Mundo"
+    texto_esperado_mixto = "1. a) Primera\n2.Lorem Ipsum\n3. b) Segunda\n4.Hola Mundo"
+    assert (
+        insertar_espacio_entre_punto_y_letra(texto_entrada_mixto).rstrip()
+        == texto_esperado_mixto.rstrip()
+    )
 
 
 if __name__ == "__main__":
