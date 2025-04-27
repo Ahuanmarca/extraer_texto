@@ -6,6 +6,7 @@ from funciones.normalizadores import unir_oraciones_partidas
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
 from funciones.normalizadores import reemplazar_texto_por_linea_vacia
 from funciones.normalizadores import insertar_espacio_entre_punto_y_letra
+from funciones.normalizadores import unir_numeracion_con_letra
 
 
 def test_corregir_numeracion_y_letras():
@@ -183,6 +184,32 @@ def test_insertar_espacio_entre_punto_y_letra():
         insertar_espacio_entre_punto_y_letra(texto_entrada_mixto).rstrip()
         == texto_esperado_mixto.rstrip()
     )
+
+
+def test_unir_numeracion_con_letra():
+    texto_entrada = (
+        "1.\n"
+        "a) Lorem Ipsum\n"
+        "2.\n"
+        "Cc) Otro ejemplo\n"
+        "3. c) Todo bien\n"
+        "4.\n"
+        "b) Final feliz\n"
+        "5.\n"
+        "Texto sin opción"  # No es opción, no debe unirse
+    )
+
+    texto_esperado = (
+        "1. a) Lorem Ipsum\n"
+        "2. c) Otro ejemplo\n"
+        "3. c) Todo bien\n"
+        "4. b) Final feliz\n"
+        "5.\n"
+        "Texto sin opción"
+    )
+
+    resultado = unir_numeracion_con_letra(texto_entrada)
+    assert resultado == texto_esperado
 
 
 if __name__ == "__main__":

@@ -38,6 +38,41 @@ def insertar_espacio_entre_punto_y_letra(texto: str) -> str:
     return "\n".join(nuevas_lineas)
 
 
+def unir_numeracion_con_letra(texto: str) -> str:
+    """
+    Une numeraciones que quedaron separadas de la opción.
+    Ejemplo:
+    1.
+    a) Lorem Ipsum
+    → 1. a) Lorem Ipsum
+    """
+    lineas = texto.splitlines()
+    resultado = []
+    i = 0
+
+    while i < len(lineas):
+        linea = lineas[i].rstrip()
+
+        if re.match(r"^\d+\.$", linea) and i + 1 < len(lineas):
+            siguiente = lineas[i + 1].lstrip()
+
+            match_opcion = re.match(r"^([A-Za-z]{1,2})\)", siguiente)
+            if match_opcion:
+                letra = match_opcion.group(1).lower()[
+                    -1
+                ]  # Solo la última letra y minúscula
+                resto = siguiente[len(match_opcion.group(0)) :].lstrip()
+                nueva_linea = f"{linea[:-1]}. {letra}) {resto}"
+                resultado.append(nueva_linea)
+                i += 2
+                continue
+
+        resultado.append(linea)
+        i += 1
+
+    return "\n".join(resultado)
+
+
 def reemplazar_texto_por_linea_vacia(texto, texto_objetivo):
     """
     Reemplaza ocurrencias de un marcador en el texto por una línea vacía.
