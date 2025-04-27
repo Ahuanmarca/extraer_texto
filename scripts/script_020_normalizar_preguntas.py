@@ -4,6 +4,7 @@ import os
 from collections import Counter
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
 from funciones.normalizadores import corregir_numeracion_preguntas_reserva_general
+from funciones.normalizadores import eliminar_basurita_final
 
 # === BASE_DIR Y RUTAS ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -146,6 +147,17 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
 
     # === 6. CORREGIR NUMERACION PREGUNTAS RESERVA ===
     texto = corregir_numeracion_preguntas_reserva_general(texto)
+
+    # === 7. ELIMINAR BASURITA FINAL ===
+
+    basuritas = {
+        "p A E",
+        " :",
+        " Ae",
+        " Preguntas de reserva",
+        "En MADTEST tienes más preguntas, y todos tus avances quedan hy SN registrados y se reflejan en el ranking. IS ¡Supera tus límites con MADTEST! o MA A rr ronene",
+    }
+    texto = eliminar_basurita_final(texto, basuritas)
 
     # === 5. GUARDAR RESULTADO Y LOG ===
     guardar_resultado(texto, nombre_salida)

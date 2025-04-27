@@ -298,6 +298,33 @@ def test_corregir_numeracion_preguntas_reserva_general():
     assert resultado == texto_esperado
 
 
+def test_eliminar_basurita_final(capsys):
+    texto_entrada = (
+        "d) Oferta-demanda. p A E\n"
+        "b) Otra línea buena.\n"
+        "c) Sin problema p A E\n"
+        "d) Línea limpia\n"
+    )
+    texto_esperado = (
+        "d) Oferta-demanda.\n"
+        "b) Otra línea buena.\n"
+        "c) Sin problema\n"
+        "d) Línea limpia"
+    )
+
+    basuritas = {"p A E"}
+
+    from funciones.normalizadores import eliminar_basurita_final
+
+    resultado = eliminar_basurita_final(texto_entrada, basuritas)
+
+    assert resultado == texto_esperado
+
+    # Verificar que mostró algo en consola
+    captured = capsys.readouterr()
+    assert "Corrigiendo línea" in captured.out
+    assert "Antes:" in captured.out
+    assert "Después:" in captured.out
 
 
 if __name__ == "__main__":

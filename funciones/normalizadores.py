@@ -498,3 +498,35 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
 
     # === Resultado final ===
     return "\n".join(nuevas_lineas)
+
+
+def eliminar_basurita_final(texto: str, basuritas: set) -> str:
+    """
+    Elimina cadenas específicas del final de las líneas de un texto.
+    Muestra en consola los cambios realizados con el fragmento eliminado resaltado.
+    """
+    COLOR_BEGIN = "\033[1;33m"  # Amarillo
+    COLOR_END = "\033[0m"
+
+    nuevas_lineas = []
+
+    for linea in texto.splitlines():
+        linea_original = linea.rstrip()
+
+        for basura in basuritas:
+            # Si la línea termina exactamente con la basura (ignorando espacios)
+            if linea_original.endswith(basura):
+                inicio_basura = len(linea_original) - len(basura)
+                parte_buena = linea_original[:inicio_basura].rstrip()
+
+                resaltado = parte_buena + COLOR_BEGIN + basura + COLOR_END
+                print(
+                    f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n"
+                )
+
+                linea_original = parte_buena  # Actualizamos la línea ya corregida
+                break  # Solo quitamos una basura por línea (si hay varias, correría de nuevo en otra pasada)
+
+        nuevas_lineas.append(linea_original)
+
+    return "\n".join(nuevas_lineas)
