@@ -42,7 +42,7 @@ def main(texto, nombre_archivo_log=None):
     lineas = [l for l in lineas if not ("===== IMG_" in l and ".heic =====" in l)]
 
     nuevas_lineas = "\n".join(lineas)
-    log_advertencias = ["TODO"]
+    log_advertencias = []
 
     # guardar_texto_con_timestamp(nuevas_lineas, "referencia_imagenes")
 
@@ -61,13 +61,13 @@ def main(texto, nombre_archivo_log=None):
 
     # === ELIMINAR NUMERACIÓN HUÉRFANA ===
     # >>> Resulta que la posición donde aparece no es nada confiable.
-    nuevas_lineas = eliminar_numeraciones_huerfanas(nuevas_lineas)
+    nuevas_lineas, log_lines = eliminar_numeraciones_huerfanas(nuevas_lineas)
+    log_advertencias.extend(log_lines)
     # guardar_texto_con_timestamp(nuevas_lineas, "numeros_huerfanos")
 
     # === CAMBIAR LETRAS POR GUIONES EN COMENTARIOS EXPLICATIVOS: "a) Lorem." --> "- Lorem." ===
-    guardar_texto_con_timestamp(nuevas_lineas, "pre_letra_a_guion")
     nuevas_lineas = reemplazar_letras_en_bloques(nuevas_lineas)
-    guardar_texto_con_timestamp(nuevas_lineas, "post_letra_a_guion")
+    # guardar_texto_con_timestamp(nuevas_lineas, "letra_a_guion")
 
     # === 2. AGREGAR NUMERACIÓN FALTANTE - NUEVA VERSIÓN ===
     nuevas_lineas = agregar_numeracion_a_respuestas_huerfanas(nuevas_lineas)
@@ -100,7 +100,8 @@ def main(texto, nombre_archivo_log=None):
     # guardar_texto_con_timestamp(nuevas_lineas, "unir_oraciones")
 
     # === 6. CORREGIR PALABRAS PARTIDAS CON GUIONES ===
-    nuevas_lineas = unir_palabras_partidas_por_guiones(nuevas_lineas)
+    nuevas_lineas, log_lines = unir_palabras_partidas_por_guiones(nuevas_lineas)
+    # log_advertencias.extend(log_lines)
     # guardar_texto_con_timestamp(nuevas_lineas, "unir_palabras")
 
     # === 7. GUARDAR RESULTADOS ===
@@ -110,7 +111,7 @@ def main(texto, nombre_archivo_log=None):
             f.write(advertencia + "\n")
 
     # === 8. MENSAJE FINAL EN CONSOLA ===
-    print(f"📝 Log de advertencias guardado como: {archivo_log}")
+    # print(f"📝 Log de advertencias guardado como: {archivo_log}")
 
     return nuevas_lineas
 

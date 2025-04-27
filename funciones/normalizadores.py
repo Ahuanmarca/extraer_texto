@@ -129,16 +129,18 @@ def eliminar_numeraciones_huerfanas(texto: str) -> str:
     """
     lineas = texto.splitlines()
     nuevas_lineas = []
-
+    log_lines = []
+    
     patron_huerfana = re.compile(r"^\s*\d+\.?\s*$")
 
     for linea in lineas:
         if patron_huerfana.match(linea):
-            print(f"⏩ Eliminada numeración huérfana: '{linea.strip()}'")
+            # print(f"⏩ Eliminada numeración huérfana: '{linea.strip()}'")
+            log_lines.append(f"⏩ Eliminada numeración huérfana: '{linea.strip()}'")
             continue
         nuevas_lineas.append(linea)
 
-    return "\n".join(nuevas_lineas)
+    return "\n".join(nuevas_lineas), log_lines
 
 
 def reemplazar_letras_en_bloques(texto: str) -> str:
@@ -546,6 +548,7 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
     COLOR_BEGIN = "\033[1;33m"
     COLOR_END = "\033[0m"
     nuevas_lineas = []
+    log_lines = []
 
     lineas = texto.splitlines()
 
@@ -577,12 +580,14 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
                     linea_modificada[:start] + propuesto + linea_modificada[end:]
                 )
                 offset -= len("- ")
-                print(
-                    f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)"
-                )
+                # print(
+                    # f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)"
+                # )
+                log_lines.append(f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)")
 
             elif fragmento_rechazado(original_fragmento):
-                print(f"⏩ Línea {i}: {resaltado_original} (rechazo automático)")
+                # print(f"⏩ Línea {i}: {resaltado_original} (rechazo automático)")
+                log_lines.append(f"⏩ Línea {i}: {resaltado_original} (rechazo automático)")
                 # No hacemos nada, mantenemos la palabra partida
 
             else:
@@ -618,7 +623,7 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
         json.dump(palabras_rechazadas, f, ensure_ascii=False, indent=2)
 
     # === Resultado final ===
-    return "\n".join(nuevas_lineas)
+    return "\n".join(nuevas_lineas), log_lines
 
 
 def eliminar_basurita_final(texto: str, basuritas: set) -> str:
@@ -630,6 +635,7 @@ def eliminar_basurita_final(texto: str, basuritas: set) -> str:
     COLOR_END = "\033[0m"
 
     nuevas_lineas = []
+    log_lines = []
 
     for linea in texto.splitlines():
         linea_original = linea.rstrip()
@@ -641,13 +647,14 @@ def eliminar_basurita_final(texto: str, basuritas: set) -> str:
                 parte_buena = linea_original[:inicio_basura].rstrip()
 
                 resaltado = parte_buena + COLOR_BEGIN + basura + COLOR_END
-                print(
-                    f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n"
-                )
+                # print(
+                    # f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n"
+                # )
+                log_lines.append(f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n")
 
                 linea_original = parte_buena  # Actualizamos la línea ya corregida
                 break  # Solo quitamos una basura por línea (si hay varias, correría de nuevo en otra pasada)
 
         nuevas_lineas.append(linea_original)
 
-    return "\n".join(nuevas_lineas)
+    return "\n".join(nuevas_lineas), log_lines

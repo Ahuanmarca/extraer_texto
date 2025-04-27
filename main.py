@@ -79,7 +79,7 @@ def main():
     with open(ruta_salida_final, "w", encoding="utf-8") as f:
         f.write(preguntas_respuestas)
 
-    print(f"\n✅ Archivo final guardado en: {ruta_salida_final}")
+    print(f"✅ Archivo final guardado en: {ruta_salida_final}")
 
 
 if __name__ == "__main__":

@@ -127,19 +127,19 @@ def main(texto: str, nombre_archivo_log=None) -> str:
                 )
 
     # === Mostrar resumen en consola ===
-    print("\n📝 RESUMEN DE REVISIÓN:")
+    # print("\n📝 RESUMEN DE REVISIÓN:")
     if not problemas and not errores_numeracion and not orden_incorrecto:
         print(
             "✅ Todo correcto: 64 preguntas bien numeradas, ordenadas y con 4 opciones."
         )
-    else:
-        if problemas:
-            print(f"❌ Preguntas con número de opciones incorrectas: {len(problemas)}")
-        if orden_incorrecto:
-            print(f"🔀 Preguntas con opciones desordenadas: {len(orden_incorrecto)}")
-        for linea in resumen_consola:
-            print(linea)
+    # else:
+        # if problemas:
+            # print(f"❌ Preguntas con número de opciones incorrectas: {len(problemas)}")
+        # if orden_incorrecto:
+            # print(f"🔀 Preguntas con opciones desordenadas: {len(orden_incorrecto)}")
+        # for linea in resumen_consola:
+            # print(linea)
 
-    print("📄 Detalles registrados en el log.")
+    # print("📄 Detalles registrados en el log.")
 
     return "\n\n".join(bloques_marcados)

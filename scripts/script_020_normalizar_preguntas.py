@@ -14,6 +14,7 @@ DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
 
 # === FUNCIONES AUXILIARES ===
 
+
 def eliminar_referencias_imagen(texto):
     lineas = texto.splitlines()
     lineas_filtradas = [
@@ -113,10 +114,12 @@ def guardar_log(advertencias, nombre_archivo_log):
 
 
 # === MAIN ===
-def main(texto: str=None, nombre_archivo_log=None):
+def main(texto: str = None, nombre_archivo_log=None):
     if not texto or not nombre_archivo_log:
         print("❌ Faltan argumentos.")
         return ""
+
+    log_advertencias = []
 
     # === 2. ELIMINAR REFERENCIAS A IMÁGENES ===
     texto = eliminar_referencias_imagen(texto)
@@ -126,9 +129,11 @@ def main(texto: str=None, nombre_archivo_log=None):
 
     # === 4. DETECTAR Y NORMALIZAR PREGUNTAS Y OPCIONES ===
     texto, advertencias = detectar_y_normalizar_preguntas(texto)
+    log_advertencias.extend(advertencias)
 
     # === 5. UNIR PALABRAS PARTIDAS POR GUIONES ===
-    texto = unir_palabras_partidas_por_guiones(texto)
+    texto, log_lines = unir_palabras_partidas_por_guiones(texto)
+    # log_advertencias.extend(log_lines)
 
     # === 6. CORREGIR NUMERACION PREGUNTAS RESERVA ===
     texto = corregir_numeracion_preguntas_reserva_general(texto)
@@ -142,10 +147,11 @@ def main(texto: str=None, nombre_archivo_log=None):
         " Preguntas de reserva",
         "En MADTEST tienes más preguntas, y todos tus avances quedan hy SN registrados y se reflejan en el ranking. IS ¡Supera tus límites con MADTEST! o MA A rr ronene",
     }
-    texto = eliminar_basurita_final(texto, basuritas)
+    texto, log_lines = eliminar_basurita_final(texto, basuritas)
+    log_advertencias.extend(log_lines)
 
     # === 8. GUARDAR LOG ===
-    guardar_log(advertencias, nombre_archivo_log)
+    guardar_log(log_advertencias, nombre_archivo_log)
 
     # === 9. RETORNAR TEXTO NORMALIZADO ===
     return texto
