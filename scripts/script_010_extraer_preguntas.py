@@ -12,7 +12,8 @@ CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
 IMAGENES_CRUDAS = os.path.join(BASE_DIR, "imagenes_crudas")
 DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
 
-def main(nombre_carpeta=None, nombre_salida=None, nombre_archivo_log=None):
+
+def main(nombre_carpeta=None, nombre_archivo_log=None):
     register_heif_opener()
 
     # Ruta a la carpeta (se asume que está en el mismo nivel que el script)
@@ -20,26 +21,27 @@ def main(nombre_carpeta=None, nombre_salida=None, nombre_archivo_log=None):
 
     # Verificar que la carpeta exista
     if not os.path.isdir(carpeta_imagenes):
-        print(f"❌ La carpeta '{nombre_carpeta}' no existe en el mismo nivel que el script.")
+        print(
+            f"❌ La carpeta '{nombre_carpeta}' no existe en el mismo nivel que el script."
+        )
         exit(1)
 
-    # Archivos de salida
-    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
     archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo_log}.log")
 
     # Crear carpeta temporal para conversiones
     carpeta_temporal = os.path.join(os.getcwd(), f"__tmp_{nombre_carpeta}")
     os.makedirs(carpeta_temporal, exist_ok=True)
 
-    # Limpiar archivos anteriores
-    with open(archivo_salida, 'w', encoding='utf-8') as f:
-        f.write('')
-    with open(archivo_log, 'a', encoding='utf-8') as f:
-        f.write('Errores en extracción de imágenes:\n')
+    # Limpiar log anterior
+    with open(archivo_log, "a", encoding="utf-8") as f:
+        f.write("Errores en extracción de imágenes:\n")
 
     # Contadores
     procesadas = 0
     errores = 0
+
+    # NUEVO: Acumulador de texto
+    texto_final = ""
 
     # Recorre todas las imágenes de la carpeta
     for nombre_archivo in sorted(os.listdir(carpeta_imagenes)):
@@ -50,37 +52,36 @@ def main(nombre_carpeta=None, nombre_salida=None, nombre_archivo_log=None):
 
         extension = os.path.splitext(nombre_archivo)[1].lower()
 
-        if extension not in ['.jpg', '.jpeg', '.png', '.heic']:
+        if extension not in [".jpg", ".jpeg", ".png", ".heic"]:
             continue
 
         try:
             # Si es .heic, convertir a .jpg en la carpeta temporal
-            if extension == '.heic':
+            if extension == ".heic":
                 imagen = Image.open(ruta_original)
-                nombre_convertido = os.path.splitext(nombre_archivo)[0] + '.jpg'
+                nombre_convertido = os.path.splitext(nombre_archivo)[0] + ".jpg"
                 ruta_convertida = os.path.join(carpeta_temporal, nombre_convertido)
                 imagen.convert("RGB").save(ruta_convertida, "JPEG")
             else:
                 ruta_convertida = ruta_original
 
-            print(f'Procesando {nombre_archivo}...')
-            texto = pytesseract.image_to_string(Image.open(ruta_convertida), lang='spa')
+            print(f"Procesando {nombre_archivo}...")
+            texto = pytesseract.image_to_string(Image.open(ruta_convertida), lang="spa")
 
-            with open(archivo_salida, 'a', encoding='utf-8') as f:
-                f.write(f"===== {nombre_archivo} =====\n")
-                f.write(texto)
-                f.write("\n\n")
+            texto_final += f"===== {nombre_archivo} =====\n"
+            texto_final += texto
+            texto_final += "\n\n"
 
             procesadas += 1
 
         except Exception as e:
             errores += 1
-            with open(archivo_log, 'a', encoding='utf-8') as f:
+            with open(archivo_log, "a", encoding="utf-8") as f:
                 f.write(f"{nombre_archivo}: {str(e)}\n")
-            print(f'⚠️ Error procesando {nombre_archivo}, registrado en el log.')
+            print(f"⚠️ Error procesando {nombre_archivo}, registrado en el log.")
 
     if errores == 0:
-        with open(archivo_log, 'a', encoding='utf-8') as f:
+        with open(archivo_log, "a", encoding="utf-8") as f:
             f.write("No se encontraron errores en la lectura de las imágenes.\n")
 
     # Eliminar carpeta temporal
@@ -88,12 +89,17 @@ def main(nombre_carpeta=None, nombre_salida=None, nombre_archivo_log=None):
 
     # Resumen final
     print("\n✅ Proceso terminado.")
-    print(f"📄 Texto extraído guardado en: {archivo_salida}")
     print(f"🖼️ Imágenes procesadas con éxito: {procesadas}")
     print(f"❌ Imágenes con error: {errores}")
 
     if errores > 0:
         print(f"📁 Revisa el log de errores en: {archivo_log}")
 
+    # NUEVO: Retornar el texto en vez de guardar en archivo
+    return texto_final
+
+
 if __name__ == "__main__":
-    main()
+    texto_extraido = main()
+    # Si quieres ver el texto extraído:
+    # print(texto_extraido)

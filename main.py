@@ -9,6 +9,10 @@ from scripts import (
     script_120_normalizar_respuestas as script_120,
 )
 
+from funciones.debug import guardar_texto_con_timestamp
+
+DEBUG = True
+
 
 def obtener_nombre_carpeta():
     # 1. Comprobar si se pasó como argumento
@@ -41,30 +45,39 @@ def main():
     salida_12 = nombre_carpeta + "_120"  # filename_120
 
     # Extraer texto de imágenes crudas
-    script_010.main(nombre_carpeta, salida_01, nombre_archivo_log)
+    texto_preguntas = script_010.main(nombre_carpeta, nombre_archivo_log)
+    if DEBUG:
+        guardar_texto_con_timestamp(texto_preguntas, "01_extraer_preguntas")
 
     # Normalizar estructura del texto
-    script_020.main(
-        nombre_archivo=salida_01,
-        nombre_salida=salida_02,
+    texto_preguntas = script_020.main(
+        texto_preguntas,
         nombre_archivo_log=nombre_archivo_log,
     )
+    if DEBUG:
+        guardar_texto_con_timestamp(texto_preguntas, "02_normalizar_preguntas")
 
     # Buscar errores y marcarlos con "=== TO FIX ==="
-    script_040.main(nombre_archivo=salida_02, nombre_archivo_log=nombre_archivo_log)
+    texto_preguntas = script_040.main(
+        texto_preguntas, nombre_archivo_log=nombre_archivo_log
+    )
+    if DEBUG:
+        guardar_texto_con_timestamp(texto_preguntas, "03_marcar_errores")
 
     # Extraer texto de imágenes crudas (de respuestas)
-    script_110.main(
-        nombre_carpeta[:-1] + "B", salida_11, nombre_archivo_log=nombre_archivo_log
+    texto_respuestas = script_110.main(
+        nombre_carpeta[:-1] + "B", nombre_archivo_log=nombre_archivo_log
     )
+    if DEBUG:
+        guardar_texto_con_timestamp(texto_respuestas, "04_extraer_respuestas")
 
     # Normalizar texto de respuestas
-    script_120.main(
-        nombre_archivo=salida_11,
-        nombre_salida=salida_12,
+    texto_respuestas = script_120.main(
+        texto_respuestas,
         nombre_archivo_log=nombre_archivo_log,
     )
-
+    if DEBUG:
+        guardar_texto_con_timestamp(texto_respuestas, "05_normalizar_respuestas")
 
 if __name__ == "__main__":
     main()

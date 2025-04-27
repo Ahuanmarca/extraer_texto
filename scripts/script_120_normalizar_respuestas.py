@@ -13,7 +13,7 @@ from funciones.normalizadores import unir_numeracion_con_letra
 from funciones.normalizadores import corregir_numeracion_preguntas_reserva
 from funciones.normalizadores import insertar_espacio_tras_letra_y_parentesis
 
-DEBUG = True
+DEBUG = False
 
 # === BASE_DIR: carpeta raíz del proyecto ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -22,14 +22,18 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
 
 
-def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
-    archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}.txt")
-    archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
+def main(texto, nombre_archivo_log=None):
+    # def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
+    # archivo_entrada = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}.txt")
+    # archivo_salida = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
     archivo_log = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo_log}.log")
 
     # === LECTURA DE LÍNEAS === <-- Se omiten líneas vacías
-    with open(archivo_entrada, "r", encoding="utf-8") as f:
-        lineas = [line.rstrip() for line in f if line.strip()]
+    # with open(archivo_entrada, "r", encoding="utf-8") as f:
+    # lineas = [line.rstrip() for line in f if line.strip()]
+
+    # === 0. LIMPIAR LÍNEAS VACÍAS Y ESPACIOS AL FINAL DE LÍNEAS ===
+    lineas = [line.rstrip() for line in texto.splitlines() if line.strip()]
 
     # === 1. ELIMINAR LÍNEAS CON REFERENCIAS A IMÁGENES ===
     lineas = [l for l in lineas if not ("===== IMG_" in l and ".heic =====" in l)]
@@ -93,18 +97,15 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
         guardar_texto_con_timestamp(nuevas_lineas, "unir_palabras")
 
     # === 7. GUARDAR RESULTADOS ===
-    with open(archivo_salida, "w", encoding="utf-8") as f:
-        for linea in nuevas_lineas.splitlines():
-            f.write(linea + "\n")
-
     with open(archivo_log, "a", encoding="utf-8") as f:
         f.write("\nAdvertencias en proceso de normalización:\n")
         for advertencia in log_advertencias:
             f.write(advertencia + "\n")
 
     # === 8. MENSAJE FINAL EN CONSOLA ===
-    print(f"\n✅ Archivo normalizado guardado como: {archivo_salida}")
     print(f"📝 Log de advertencias guardado como: {archivo_log}")
+
+    return nuevas_lineas
 
 
 if __name__ == "__main__":

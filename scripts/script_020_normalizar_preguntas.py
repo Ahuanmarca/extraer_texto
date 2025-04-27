@@ -13,12 +13,6 @@ DICCIONARIO_PATH = os.path.join(BASE_DIR, "diccionario.txt")
 
 
 # === FUNCIONES AUXILIARES ===
-def leer_texto(nombre_archivo):
-    ruta = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo}.txt")
-    with open(ruta, "r", encoding="utf-8") as f:
-        texto = f.read()
-    return texto
-
 
 def eliminar_referencias_imagen(texto):
     lineas = texto.splitlines()
@@ -110,12 +104,6 @@ def detectar_y_normalizar_preguntas(texto):
     return texto_normalizado, log_advertencias
 
 
-def guardar_resultado(texto, nombre_salida):
-    ruta = os.path.join(CARPETA_TRABAJO, f"{nombre_salida}.txt")
-    with open(ruta, "w", encoding="utf-8") as f:
-        f.write(texto)
-
-
 def guardar_log(advertencias, nombre_archivo_log):
     ruta = os.path.join(CARPETA_TRABAJO, f"{nombre_archivo_log}.log")
     with open(ruta, "a", encoding="utf-8") as f:
@@ -125,13 +113,10 @@ def guardar_log(advertencias, nombre_archivo_log):
 
 
 # === MAIN ===
-def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
-    if not nombre_archivo or not nombre_salida or not nombre_archivo_log:
+def main(texto: str=None, nombre_archivo_log=None):
+    if not texto or not nombre_archivo_log:
         print("❌ Faltan argumentos.")
-        return
-
-    # === 1. LECTURA DEL TEXTO ===
-    texto = leer_texto(nombre_archivo)
+        return ""
 
     # === 2. ELIMINAR REFERENCIAS A IMÁGENES ===
     texto = eliminar_referencias_imagen(texto)
@@ -159,13 +144,12 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     }
     texto = eliminar_basurita_final(texto, basuritas)
 
-    # === 5. GUARDAR RESULTADO Y LOG ===
-    guardar_resultado(texto, nombre_salida)
+    # === 8. GUARDAR LOG ===
     guardar_log(advertencias, nombre_archivo_log)
 
-    print(f"\n✅ Archivo normalizado guardado como: {nombre_salida}.txt")
-    print(f"📝 Log de advertencias guardado como: {nombre_archivo_log}.log")
+    # === 9. RETORNAR TEXTO NORMALIZADO ===
+    return texto
 
 
 if __name__ == "__main__":
-    main()
+    texto_resultado = main()
