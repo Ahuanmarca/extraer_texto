@@ -7,6 +7,7 @@ from scripts import (
     script_040_comprobar_formato as script_040,
     script_010_extraer_preguntas as script_110,
     script_120_normalizar_respuestas as script_120,
+    script_210_combinar_preguntas_respuestas as script_210,
 )
 
 from funciones.debug import guardar_texto_con_timestamp
@@ -57,12 +58,16 @@ def main():
     if DEBUG:
         guardar_texto_con_timestamp(texto_preguntas, "02_normalizar_preguntas")
 
+    # TODO: Reubicar el marcado de errores
+    # Hacerlo después de combinar preguntas y respuestas
+    # Al tenerlo aquí está generando problemas enla combinación
+
     # Buscar errores y marcarlos con "=== TO FIX ==="
-    texto_preguntas = script_040.main(
-        texto_preguntas, nombre_archivo_log=nombre_archivo_log
-    )
-    if DEBUG:
-        guardar_texto_con_timestamp(texto_preguntas, "03_marcar_errores")
+    # texto_preguntas = script_040.main(
+        # texto_preguntas, nombre_archivo_log=nombre_archivo_log
+    # )
+    # if DEBUG:
+        # guardar_texto_con_timestamp(texto_preguntas, "03_marcar_errores")
 
     # Extraer texto de imágenes crudas (de respuestas)
     texto_respuestas = script_110.main(
@@ -78,6 +83,13 @@ def main():
     )
     if DEBUG:
         guardar_texto_con_timestamp(texto_respuestas, "05_normalizar_respuestas")
+
+    # Combinar preguntas y respuesta en un único archivo
+    preguntas_respuestas = script_210.main(texto_preguntas, texto_respuestas)
+    if DEBUG:
+        guardar_texto_con_timestamp(preguntas_respuestas, "preguntas_respuestas")
+    # TODO: Guardar archivo usando nombre de carpeta original + ".txt"
+
 
 if __name__ == "__main__":
     main()
