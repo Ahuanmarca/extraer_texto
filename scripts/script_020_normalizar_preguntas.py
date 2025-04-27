@@ -3,6 +3,7 @@ import re
 import os
 from collections import Counter
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
+from funciones.normalizadores import corregir_numeracion_preguntas_reserva_general
 
 # === BASE_DIR Y RUTAS ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -142,6 +143,9 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
 
     # === 5. UNIR PALABRAS PARTIDAS POR GUIONES ===
     texto = unir_palabras_partidas_por_guiones(texto)
+
+    # === 6. CORREGIR NUMERACION PREGUNTAS RESERVA ===
+    texto = corregir_numeracion_preguntas_reserva_general(texto)
 
     # === 5. GUARDAR RESULTADO Y LOG ===
     guardar_resultado(texto, nombre_salida)

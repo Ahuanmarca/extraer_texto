@@ -277,6 +277,45 @@ def corregir_numeracion_preguntas_reserva(texto: str) -> str:
     return "\n".join(nuevas_lineas) + "\n"
 
 
+def corregir_numeracion_preguntas_reserva_general(texto: str) -> str:
+    """
+    A partir de la línea que empieza con '60.', corrige las siguientes numeraciones '1.', '2.', '3.', '4.'
+    convirtiéndolas en '61.', '62.', '63.', '64.' respectivamente, en un formato más laxo.
+    """
+
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+
+    # Nuevo patrón más flexible:
+    patron_60 = re.compile(r"^60\.\s+.*")
+    patron_reserva = re.compile(r"^([1-4])\.\s+.*")
+
+    encontrado_60 = False
+    reservas_actualizadas = 0
+
+    for linea in lineas:
+        if not encontrado_60:
+            if patron_60.match(linea):
+                encontrado_60 = True
+            nuevas_lineas.append(linea)
+            continue
+
+        if reservas_actualizadas < 4:
+            match = patron_reserva.match(linea)
+            if match:
+                numero_actual = int(match.group(1))
+                nuevo_numero = 60 + numero_actual
+                # Solo reemplazar el número inicial
+                nueva_linea = re.sub(r"^\d+\.", f"{nuevo_numero}.", linea, count=1)
+                nuevas_lineas.append(nueva_linea)
+                reservas_actualizadas += 1
+                continue
+
+        nuevas_lineas.append(linea)
+
+    return "\n".join(nuevas_lineas) + "\n"
+
+
 def insertar_linea_vacia_antes_numeracion(texto: str) -> str:
     lineas = texto.splitlines()
     nuevas_lineas = []

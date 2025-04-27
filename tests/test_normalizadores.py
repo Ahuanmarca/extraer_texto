@@ -235,5 +235,70 @@ def test_insertar_espacio_tras_letra_y_parentesis():
     assert resultado == texto_esperado
 
 
+def test_corregir_numeracion_preguntas_reserva_general():
+    texto = (
+        "60. ¿Cómo se denomina la era donde el acceso y la gestión de datos se convirtieron en un activo estratégico y, con el surgimiento de Internet y las tecnologías de la información, las empresas comenzaron a recopilar datos sobre sus clientes de manera más sistemática?\n"
+        "a) Era de la información.\n"
+        "b) Era de la distribución.\n"
+        "c) Era digital.\n"
+        "d) Era de la producción. Preguntas de reserva\n"
+        "1. ¿Puede un cliente de Cercanías y Media Distancia Convencional sin plazas asignadas viajar de pie?\n"
+        "a) Tanto en Cercanías como en Media Distancia Convencional podrá viajar de pie u ocupar un asiento, si está libre.\n"
+        "b) Tanto en Cercanías como en Media Distancia Convencional se encuentra prohíbo viajar de pie.\n"
+        "c) Podrá viajar de pie en Cercanías pero no en Media Distancia Convencional.\n"
+        "d) Podrá viajar de pie en Media Distancia Convencional pero no en Cercanías.\n"
+        "2. ¿Cuál es el ámbito personal de aplicación del Protocolo para la prevención de 4 ? los casos de acoso sexual, acoso por razón de sexo y acoso moral de Renfe?\n"
+        "a) El protocolo rige para la totalidad de las personas pertenecientes a la empresa Renfe-Operadora.\n"
+        "b) El protocolo rige para el personal directivo de Renfe-Operadora.\n"
+        "c) El protocolo rige para los empleados de Renfe-Operadora que denuncien conductas de acoso sexual, acoso por razón de sexo o acoso moral.\n"
+        "d) El protocolo rige para para todos los clientes de Renfe-Operadora.\n"
+        "3. ¿Cuál de los siguientes no es uno de los principios de Cultura de Seguridad del Grupo Renfe?\n"
+        "a) Seguridad como valor esencial.\n"
+        "b) Apertura y confianza.\n"
+        "c) Responsabilidad personal.\n"
+        "d) Principio de legalidad.\n"
+        "4. ¿Cuál de las siguientes fechas marcó el inicio de la era de la información?\n"
+        "a) 1960.\n"
+        "b) 1990\n"
+        "c) 2010\n"
+        "d) 1998 En MADTEST tienes más preguntas, y todos tus avances quedan hy SN registrados y se reflejan en el ranking. IS ¡Supera tus límites con MADTEST! o MA A rr ronene\n"
+    )
+
+    texto_esperado = (
+        "60. ¿Cómo se denomina la era donde el acceso y la gestión de datos se convirtieron en un activo estratégico y, con el surgimiento de Internet y las tecnologías de la información, las empresas comenzaron a recopilar datos sobre sus clientes de manera más sistemática?\n"
+        "a) Era de la información.\n"
+        "b) Era de la distribución.\n"
+        "c) Era digital.\n"
+        "d) Era de la producción. Preguntas de reserva\n"
+        "61. ¿Puede un cliente de Cercanías y Media Distancia Convencional sin plazas asignadas viajar de pie?\n"
+        "a) Tanto en Cercanías como en Media Distancia Convencional podrá viajar de pie u ocupar un asiento, si está libre.\n"
+        "b) Tanto en Cercanías como en Media Distancia Convencional se encuentra prohíbo viajar de pie.\n"
+        "c) Podrá viajar de pie en Cercanías pero no en Media Distancia Convencional.\n"
+        "d) Podrá viajar de pie en Media Distancia Convencional pero no en Cercanías.\n"
+        "62. ¿Cuál es el ámbito personal de aplicación del Protocolo para la prevención de 4 ? los casos de acoso sexual, acoso por razón de sexo y acoso moral de Renfe?\n"
+        "a) El protocolo rige para la totalidad de las personas pertenecientes a la empresa Renfe-Operadora.\n"
+        "b) El protocolo rige para el personal directivo de Renfe-Operadora.\n"
+        "c) El protocolo rige para los empleados de Renfe-Operadora que denuncien conductas de acoso sexual, acoso por razón de sexo o acoso moral.\n"
+        "d) El protocolo rige para para todos los clientes de Renfe-Operadora.\n"
+        "63. ¿Cuál de los siguientes no es uno de los principios de Cultura de Seguridad del Grupo Renfe?\n"
+        "a) Seguridad como valor esencial.\n"
+        "b) Apertura y confianza.\n"
+        "c) Responsabilidad personal.\n"
+        "d) Principio de legalidad.\n"
+        "64. ¿Cuál de las siguientes fechas marcó el inicio de la era de la información?\n"
+        "a) 1960.\n"
+        "b) 1990\n"
+        "c) 2010\n"
+        "d) 1998 En MADTEST tienes más preguntas, y todos tus avances quedan hy SN registrados y se reflejan en el ranking. IS ¡Supera tus límites con MADTEST! o MA A rr ronene\n"
+    )
+
+    from funciones.normalizadores import corregir_numeracion_preguntas_reserva_general
+
+    resultado = corregir_numeracion_preguntas_reserva_general(texto)
+    assert resultado == texto_esperado
+
+
+
+
 if __name__ == "__main__":
     pytest.main()
