@@ -10,6 +10,7 @@ from funciones.normalizadores import unir_palabras_partidas_por_guiones
 from funciones.normalizadores import reemplazar_texto_por_linea_vacia
 from funciones.normalizadores import insertar_espacio_entre_punto_y_letra
 from funciones.normalizadores import unir_numeracion_con_letra
+from funciones.normalizadores import corregir_numeracion_preguntas_reserva
 from funciones.normalizadores import insertar_espacio_tras_letra_y_parentesis
 
 DEBUG = True
@@ -63,6 +64,11 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     nuevas_lineas = corregir_letras_duplicadas(nuevas_lineas)
     if DEBUG:
         guardar_texto_con_timestamp(nuevas_lineas, "letras")
+
+    # === 3b. CORREGIR NUMERACIÓN PREGUNTAS RESERVA ===
+    nuevas_lineas = corregir_numeracion_preguntas_reserva(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "preguntas_reserva")
 
     # === 4. INSERTAR LÍNEA VACÍA ENTRE CADA ITEM ===
     nuevas_lineas = insertar_linea_vacia_antes_numeracion(nuevas_lineas)

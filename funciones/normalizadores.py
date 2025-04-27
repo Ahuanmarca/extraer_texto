@@ -238,6 +238,45 @@ def corregir_letras_duplicadas(texto: str) -> str:
     return "\n".join(resultado)
 
 
+def corregir_numeracion_preguntas_reserva(texto: str) -> str:
+    """
+    A partir de la línea '60.', corrige las siguientes numeraciones '1.', '2.', '3.', '4.'
+    convirtiéndolas en '61.', '62.', '63.', '64.' respectivamente.
+    """
+
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+
+    patron_60 = re.compile(r"^60\.\s*[a-dA-D][a-dA-D]?\)\s+.*")
+    patron_reserva = re.compile(r"^([1-4])\.\s*([a-dA-D])[a-dA-D]?\)\s+(.*)")
+
+    encontrado_60 = False
+    reservas_actualizadas = 0
+
+    for linea in lineas:
+        if not encontrado_60:
+            if patron_60.match(linea):
+                encontrado_60 = True
+            nuevas_lineas.append(linea)
+            continue
+
+        if reservas_actualizadas < 4:
+            match = patron_reserva.match(linea)
+            if match:
+                numero_actual = int(match.group(1))
+                letra = match.group(2).lower()
+                resto = match.group(3)
+                nuevo_numero = 60 + numero_actual
+                nueva_linea = f"{nuevo_numero}. {letra}) {resto}"
+                nuevas_lineas.append(nueva_linea)
+                reservas_actualizadas += 1
+                continue
+
+        nuevas_lineas.append(linea)
+
+    return "\n".join(nuevas_lineas) + "\n"
+
+
 def insertar_linea_vacia_antes_numeracion(texto: str) -> str:
     lineas = texto.splitlines()
     nuevas_lineas = []
