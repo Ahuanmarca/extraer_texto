@@ -123,6 +123,127 @@ def reemplazar_texto_por_linea_vacia(texto, texto_objetivo):
     return "\n".join(nuevas_lineas)
 
 
+def eliminar_numeraciones_huerfanas(texto: str) -> str:
+    """
+    Elimina líneas que consisten únicamente en una numeración (número, opcionalmente seguido de un punto).
+    """
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+
+    patron_huerfana = re.compile(r"^\s*\d+\.?\s*$")
+
+    for linea in lineas:
+        if patron_huerfana.match(linea):
+            print(f"⏩ Eliminada numeración huérfana: '{linea.strip()}'")
+            continue
+        nuevas_lineas.append(linea)
+
+    return "\n".join(nuevas_lineas)
+
+
+def reemplazar_letras_en_bloques(texto: str) -> str:
+    """
+    Reemplaza letras a), b), c), d) por guiones solo si la línea anterior o siguiente también empieza igual.
+    """
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+
+    patron_letra = re.compile(r"^[a-dA-D]\)")
+
+    for i, linea in enumerate(lineas):
+        linea_actual_es_letra = bool(patron_letra.match(linea.strip()))
+
+        linea_anterior_es_letra = (
+            i > 0 and bool(patron_letra.match(lineas[i - 1].strip()))
+        )
+        linea_siguiente_es_letra = (
+            i < len(lineas) - 1 and bool(patron_letra.match(lineas[i + 1].strip()))
+        )
+
+        if linea_actual_es_letra and (linea_anterior_es_letra or linea_siguiente_es_letra):
+            # Reemplazar la letra inicial por un guion
+            nueva_linea = re.sub(r"^([a-dA-D]\))", "-", linea, count=1)
+            nuevas_lineas.append(nueva_linea)
+        else:
+            nuevas_lineas.append(linea)
+
+    return "\n".join(nuevas_lineas)
+
+
+## NUEVA VERSIÓN DE AGREGAR NUMERACIÓN, QUE FUNCIONA CON MUCHAS
+## RESPUESTAS HUÉRFANAS AL INICIO DEL ARCHIVO
+def agregar_numeracion_a_respuestas_huerfanas(texto: str) -> str:
+    """
+    Agrega numeración faltante a respuestas huérfanas que empiezan con letras como 'a)', 'Cc)', etc.
+    Respeta las líneas que ya tienen numeración correcta.
+    """
+
+    # === Primera pasada: detectar bloques importantes (letras huérfanas y numeradas correctas) ===
+    eventos = []  # Ejemplo: [('huérfana', 'a)'), ('huérfana', 'b)'), ('numerada', 10), ...]
+
+    patron_huerfana = re.compile(r"^\s*([a-dA-D]{1,2})\)")
+    patron_numerada = re.compile(r"^\s*(\d+)\.\s*([a-dA-D]{1,2})\)")
+
+    lineas = texto.splitlines()
+
+    for linea in lineas:
+        linea = linea.strip()
+        if not linea:
+            continue
+
+        match_num = patron_numerada.match(linea)
+        if match_num:
+            numero = int(match_num.group(1))
+            eventos.append(('numerada', numero))
+            continue
+
+        match_huerfana = patron_huerfana.match(linea)
+        if match_huerfana:
+            eventos.append(('huérfana', match_huerfana.group(1).lower()))
+            continue
+
+    # === Construir la lista de numeraciones que usaremos ===
+    numeraciones = []
+    siguiente_num = 1
+
+    for tipo, dato in eventos:
+        if tipo == 'huérfana':
+            numeraciones.append(siguiente_num)
+            siguiente_num += 1
+        elif tipo == 'numerada':
+            numeraciones.append(dato)
+            siguiente_num = dato + 1  # Nos sincronizamos al número real encontrado
+
+    # === Segunda pasada: aplicar numeración a las huérfanas ===
+    nuevas_lineas = []
+    idx_numeracion = 0
+
+    for linea in lineas:
+        original = linea.rstrip()
+
+        # Caso 1: línea numerada correcta, solo copiar
+        if patron_numerada.match(original):
+            nuevas_lineas.append(original)
+            idx_numeracion += 1
+            continue
+
+        # Caso 2: línea con letra huérfana, agregar numeración
+        match_huerfana = patron_huerfana.match(original)
+        if match_huerfana:
+            letra = match_huerfana.group(1).lower()
+            resto = original[len(match_huerfana.group(0)):].lstrip()
+            numero = numeraciones[idx_numeracion]
+            nueva_linea = f"{numero}. {letra}) {resto}"
+            nuevas_lineas.append(nueva_linea)
+            idx_numeracion += 1
+            continue
+
+        # Caso 3: línea normal, no tocar
+        nuevas_lineas.append(original)
+
+    return "\n".join(nuevas_lineas)
+
+
 # Agregar numeración faltante a RESPUESTAS extraídas de imágenes crudas
 # ... no usar para normalizar las preguntas, posiblemente funcione mal
 def corregir_numeracion_y_letras(texto: str) -> str:
