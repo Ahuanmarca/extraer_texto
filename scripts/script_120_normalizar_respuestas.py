@@ -8,6 +8,8 @@ from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 from funciones.normalizadores import unir_oraciones_partidas
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
 from funciones.normalizadores import reemplazar_texto_por_linea_vacia
+from funciones.normalizadores import insertar_espacio_entre_punto_y_letra
+from funciones.normalizadores import unir_numeracion_con_letra
 
 DEBUG = True
 
@@ -35,6 +37,16 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
 
     if DEBUG:
         guardar_texto_con_timestamp(nuevas_lineas, "referencia_imagenes")
+
+    # === 1b. INSERTAR ESPACIO ENTRE PUNTO Y LETRAS ===
+    nuevas_lineas = insertar_espacio_entre_punto_y_letra(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "espacio_entre_punto_y_letra")
+
+    # === 1c. UNIR NUMERACIÓN CON LETRA PARTIDOS POR SALTO DE LINEA ===
+    nuevas_lineas = unir_numeracion_con_letra(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "unir_numeracion_con_letra")
 
     # === 2. AGREGAR NUMERACIÓN FALTANTE ===
     nuevas_lineas = corregir_numeracion_y_letras(nuevas_lineas)
