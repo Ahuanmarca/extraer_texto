@@ -21,6 +21,35 @@ def limpiar_lineas_heic(texto):
     return "\n".join(lineas_filtradas)
 
 
+def reemplazar_texto_por_linea_vacia(texto, texto_objetivo):
+    """
+    Reemplaza ocurrencias de un marcador en el texto por una línea vacía.
+    Si el marcador aparece dentro de una línea, divide la línea en dos partes, inserta una línea vacía en medio.
+
+    Args:
+        texto (str): El texto completo a procesar.
+        marcador (str): El string que se debe reemplazar por una línea vacía.
+
+    Returns:
+        str: El texto modificado.
+    """
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+
+    for linea in lineas:
+        if texto_objetivo in linea:
+            partes = linea.split(texto_objetivo)
+            for idx, parte in enumerate(partes):
+                if parte.strip():
+                    nuevas_lineas.append(parte.strip())
+                if idx < len(partes) - 1:
+                    nuevas_lineas.append("")  # insertar línea vacía
+        else:
+            nuevas_lineas.append(linea)
+
+    return "\n".join(nuevas_lineas)
+
+
 # Agregar numeración faltante a RESPUESTAS extraídas de imágenes crudas
 # ... no usar para normalizar las preguntas, posiblemente funcione mal
 def corregir_numeracion_y_letras(texto: str) -> str:

@@ -4,6 +4,7 @@ from funciones.normalizadores import corregir_letras_duplicadas
 from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 from funciones.normalizadores import unir_oraciones_partidas
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
+from funciones.normalizadores import reemplazar_texto_por_linea_vacia
 
 
 def test_corregir_numeracion_y_letras():
@@ -123,6 +124,38 @@ def test_unir_palabras_partidas_por_guiones(monkeypatch):
     resultado = unir_palabras_partidas_por_guiones(texto_entrada)
 
     assert resultado.strip() == texto_esperado.strip()
+
+
+def test_reemplazar_texto_por_linea_vacia():
+    # Caso 1: En medio de la línea
+    texto = "Lorem Ipsum Preguntas de reserva Hello World"
+    esperado = "Lorem Ipsum\n\nHello World"
+    assert reemplazar_texto_por_linea_vacia(texto, "Preguntas de reserva") == esperado
+
+    # Caso 2: Línea propia
+    texto = "Lorem Ipsum\nPreguntas de reserva\nHello World"
+    esperado = "Lorem Ipsum\n\nHello World"
+    assert reemplazar_texto_por_linea_vacia(texto, "Preguntas de reserva") == esperado
+
+    # Caso 3: Final de línea
+    texto = "Lorem Ipsum Preguntas de reserva\nHello World"
+    esperado = "Lorem Ipsum\n\nHello World"
+    assert reemplazar_texto_por_linea_vacia(texto, "Preguntas de reserva") == esperado
+
+    # Caso 4: Inicio de línea
+    texto = "Lorem Ipsum\nPreguntas de reservaHello World"
+    esperado = "Lorem Ipsum\n\nHello World"
+    assert reemplazar_texto_por_linea_vacia(texto, "Preguntas de reserva") == esperado
+
+    # Caso 5: Varias apariciones
+    texto = "A Preguntas de reserva B Preguntas de reserva C"
+    esperado = "A\n\nB\n\nC"
+    assert reemplazar_texto_por_linea_vacia(texto, "Preguntas de reserva") == esperado
+
+    # Caso 6: No cambia otras líneas vacías
+    texto = "A\n\nPreguntas de reserva\n\nB"
+    esperado = "A\n\n\n\nB"
+    assert reemplazar_texto_por_linea_vacia(texto, "Preguntas de reserva") == esperado
 
 
 if __name__ == "__main__":
