@@ -1,11 +1,14 @@
 import re
 import os
 from collections import Counter
+from funciones.debug import guardar_texto_con_timestamp
 from funciones.normalizadores import corregir_numeracion_y_letras
 from funciones.normalizadores import corregir_letras_duplicadas
 from funciones.normalizadores import insertar_linea_vacia_antes_numeracion
 from funciones.normalizadores import unir_oraciones_partidas
 from funciones.normalizadores import unir_palabras_partidas_por_guiones
+
+DEBUG = True
 
 # === BASE_DIR: carpeta raíz del proyecto ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -29,20 +32,33 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     nuevas_lineas = "\n".join(lineas)
     log_advertencias = ["TODO"]
 
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "referencia_imagenes")
+
     # === 2. AGREGAR NUMERACIÓN FALTANTE ===
     nuevas_lineas = corregir_numeracion_y_letras(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "numeracion")
 
     # === 3. CORREGIR LETRAS RARAS / DUPLICADAS ===
     nuevas_lineas = corregir_letras_duplicadas(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "letras")
 
     # === 4. INSERTAR LÍNEA VACÍA ENTRE CADA ITEM ===
     nuevas_lineas = insertar_linea_vacia_antes_numeracion(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "insertar_lineas")
 
     # === 5. UNIR ORACIONES PARTIDAS ===
     nuevas_lineas = unir_oraciones_partidas(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "unir_oraciones")
 
     # === 6. CORREGIR PALABRAS PARTIDAS CON GUIONES ===
     nuevas_lineas = unir_palabras_partidas_por_guiones(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "unir_palabras")
 
     # === 7. GUARDAR RESULTADOS ===
     with open(archivo_salida, "w", encoding="utf-8") as f:
