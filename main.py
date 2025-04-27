@@ -12,8 +12,6 @@ from scripts import (
 
 from funciones.debug import guardar_texto_con_timestamp
 
-DEBUG = True
-
 
 def obtener_nombre_carpeta():
     # 1. Comprobar si se pasó como argumento
@@ -38,52 +36,39 @@ def main():
     # Nombre de archivo log
     nombre_archivo_log = nombre_carpeta[:-1]
 
-    # Nombres de archivos de trabajo
-    salida_01 = nombre_carpeta + "_010"  # filename_010
-    salida_02 = nombre_carpeta + "_020"  # filename_020
-
-    salida_11 = nombre_carpeta + "_110"  # filename_110
-    salida_12 = nombre_carpeta + "_120"  # filename_120
-
     # Extraer texto de imágenes crudas
     texto_preguntas = script_010.main(nombre_carpeta, nombre_archivo_log)
-    if DEBUG:
-        guardar_texto_con_timestamp(texto_preguntas, "01_extraer_preguntas")
+    # guardar_texto_con_timestamp(texto_preguntas, "01_extraer_preguntas")
 
     # Normalizar estructura del texto
     texto_preguntas = script_020.main(
         texto_preguntas,
         nombre_archivo_log=nombre_archivo_log,
     )
-    if DEBUG:
-        guardar_texto_con_timestamp(texto_preguntas, "02_normalizar_preguntas")
+    # guardar_texto_con_timestamp(texto_preguntas, "02_normalizar_preguntas")
 
     # Extraer texto de imágenes crudas (de respuestas)
     texto_respuestas = script_110.main(
         nombre_carpeta[:-1] + "B", nombre_archivo_log=nombre_archivo_log
     )
-    if DEBUG:
-        guardar_texto_con_timestamp(texto_respuestas, "04_extraer_respuestas")
+    # guardar_texto_con_timestamp(texto_respuestas, "04_extraer_respuestas")
 
     # Normalizar texto de respuestas
     texto_respuestas = script_120.main(
         texto_respuestas,
         nombre_archivo_log=nombre_archivo_log,
     )
-    if DEBUG:
-        guardar_texto_con_timestamp(texto_respuestas, "05_normalizar_respuestas")
+    # guardar_texto_con_timestamp(texto_respuestas, "05_normalizar_respuestas")
 
     # Combinar preguntas y respuesta en un único archivo
     preguntas_respuestas = script_210.main(texto_preguntas, texto_respuestas)
-    if DEBUG:
-        guardar_texto_con_timestamp(preguntas_respuestas, "06_preguntas_respuestas")
+    # guardar_texto_con_timestamp(preguntas_respuestas, "06_preguntas_respuestas")
 
     # Buscar errores y marcarlos con "=== TO FIX ==="
     preguntas_respuestas = script_040.main(
         preguntas_respuestas, nombre_archivo_log=nombre_archivo_log
     )
-    if DEBUG:
-        guardar_texto_con_timestamp(preguntas_respuestas, "07_marcar_errores")
+    # guardar_texto_con_timestamp(preguntas_respuestas, "07_marcar_errores")
 
     # === GUARDAR ARCHIVO FINAL ===
     output_dir = os.path.join("carpeta_trabajo", "output")
