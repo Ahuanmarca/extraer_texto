@@ -76,6 +76,24 @@ def unir_numeracion_con_letra(texto: str) -> str:
     return "\n".join(resultado)
 
 
+def insertar_espacio_tras_letra_y_parentesis(texto: str) -> str:
+    """
+    Inserta un espacio después del paréntesis de opciones tipo 'a)', 'b)', 'c)', 'd)' si no existe.
+    Aplica en cualquier parte de la línea.
+    """
+
+    patron = re.compile(r"([a-dA-D])[a-dA-D]?\)(?=\S)")
+
+    lineas = texto.splitlines()
+    nuevas_lineas = []
+
+    for linea in lineas:
+        nueva_linea = patron.sub(lambda m: m.group(0) + " ", linea)
+        nuevas_lineas.append(nueva_linea)
+
+    return "\n".join(nuevas_lineas)
+
+
 def reemplazar_texto_por_linea_vacia(texto, texto_objetivo):
     """
     Reemplaza ocurrencias de un marcador en el texto por una línea vacía.

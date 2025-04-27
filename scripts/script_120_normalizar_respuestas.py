@@ -10,6 +10,7 @@ from funciones.normalizadores import unir_palabras_partidas_por_guiones
 from funciones.normalizadores import reemplazar_texto_por_linea_vacia
 from funciones.normalizadores import insertar_espacio_entre_punto_y_letra
 from funciones.normalizadores import unir_numeracion_con_letra
+from funciones.normalizadores import insertar_espacio_tras_letra_y_parentesis
 
 DEBUG = True
 
@@ -48,6 +49,11 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
     if DEBUG:
         guardar_texto_con_timestamp(nuevas_lineas, "unir_numeracion_con_letra")
 
+    # === 1d. INSERTAR ESPACIO ENTRE LETRA Y TEXTO ===
+    nuevas_lineas = insertar_espacio_tras_letra_y_parentesis(nuevas_lineas)
+    if DEBUG:
+        guardar_texto_con_timestamp(nuevas_lineas, "espacio_tras_letra_parentesis")
+
     # === 2. AGREGAR NUMERACIÓN FALTANTE ===
     nuevas_lineas = corregir_numeracion_y_letras(nuevas_lineas)
     if DEBUG:
@@ -64,7 +70,9 @@ def main(nombre_archivo=None, nombre_salida=None, nombre_archivo_log=None):
         guardar_texto_con_timestamp(nuevas_lineas, "insertar_lineas")
 
     # === 4b. INSERTAR LÍNEA VACÍA EN "Preguntas de reserva" ===
-    nuevas_lineas = reemplazar_texto_por_linea_vacia(nuevas_lineas, "Preguntas de reserva")
+    nuevas_lineas = reemplazar_texto_por_linea_vacia(
+        nuevas_lineas, "Preguntas de reserva"
+    )
     if DEBUG:
         guardar_texto_con_timestamp(nuevas_lineas, "limpiar_str_preguntas_reserva")
 

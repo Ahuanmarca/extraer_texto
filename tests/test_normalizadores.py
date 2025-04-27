@@ -7,6 +7,7 @@ from funciones.normalizadores import unir_palabras_partidas_por_guiones
 from funciones.normalizadores import reemplazar_texto_por_linea_vacia
 from funciones.normalizadores import insertar_espacio_entre_punto_y_letra
 from funciones.normalizadores import unir_numeracion_con_letra
+from funciones.normalizadores import insertar_espacio_tras_letra_y_parentesis
 
 
 def test_corregir_numeracion_y_letras():
@@ -209,6 +210,28 @@ def test_unir_numeracion_con_letra():
     )
 
     resultado = unir_numeracion_con_letra(texto_entrada)
+    assert resultado == texto_esperado
+
+
+def test_insertar_espacio_tras_letra_y_parentesis():
+    texto_entrada = (
+        "a)Lorem Ipsum\n"
+        "b)Dolor sit amet\n"
+        "Aquí no cambia nada\n"
+        "c)Otro ejemplo\n"
+        "Texto normal d)Más texto seguido"
+    )
+
+    texto_esperado = (
+        "a) Lorem Ipsum\n"
+        "b) Dolor sit amet\n"
+        "Aquí no cambia nada\n"
+        "c) Otro ejemplo\n"
+        "Texto normal d) Más texto seguido"
+    )
+
+    resultado = insertar_espacio_tras_letra_y_parentesis(texto_entrada)
+
     assert resultado == texto_esperado
 
 
