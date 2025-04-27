@@ -327,5 +327,34 @@ def test_eliminar_basurita_final(capsys):
     assert "Después:" in captured.out
 
 
+def test_reemplazar_letras_en_bloques():
+    texto_entrada = (
+        "15. d) Todas las anteriores son correctas.\n"
+        "\u201cLas formas de pago admitidas por Rende Viaje son:\n"
+        "a) Met\u00e1lico en moneda de curso legal en Espa\u00f1a.\n"
+        "b) Tarjetas de cr\u00e9dito / d\u00e9bito aceptadas por Renfe Viajeros.\n"
+        "c) Puntos de las tarjetas del programa de fidelizaci\u00f3n de Rende Viajeros.\n"
+        "d) Cualquiera otra regulada al efecto\u201d\n"
+        "16. c) Los gastos de gesti\u00f3n no podr\u00e1n superar el 10 % del importe del t\u00edtulo de\n"
+        "transporte."
+    )
+
+    texto_esperado = (
+        "15. d) Todas las anteriores son correctas.\n"
+        "\u201cLas formas de pago admitidas por Rende Viaje son:\n"
+        "- Met\u00e1lico en moneda de curso legal en Espa\u00f1a.\n"
+        "- Tarjetas de cr\u00e9dito / d\u00e9bito aceptadas por Renfe Viajeros.\n"
+        "- Puntos de las tarjetas del programa de fidelizaci\u00f3n de Rende Viajeros.\n"
+        "- Cualquiera otra regulada al efecto\u201d\n"
+        "16. c) Los gastos de gesti\u00f3n no podr\u00e1n superar el 10 % del importe del t\u00edtulo de\n"
+        "transporte."
+    )
+
+    from funciones.normalizadores import reemplazar_letras_en_bloques
+    resultado = reemplazar_letras_en_bloques(texto_entrada)
+
+    assert resultado.strip() == texto_esperado.strip()
+
+
 if __name__ == "__main__":
     pytest.main()
