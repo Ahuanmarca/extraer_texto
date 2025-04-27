@@ -12,6 +12,9 @@ from funciones.normalizadores import insertar_espacio_entre_punto_y_letra
 from funciones.normalizadores import unir_numeracion_con_letra
 from funciones.normalizadores import corregir_numeracion_preguntas_reserva
 from funciones.normalizadores import insertar_espacio_tras_letra_y_parentesis
+from funciones.normalizadores import agregar_numeracion_a_respuestas_huerfanas
+from funciones.normalizadores import eliminar_numeraciones_huerfanas
+from funciones.normalizadores import reemplazar_letras_en_bloques
 
 DEBUG = False
 
@@ -41,60 +44,64 @@ def main(texto, nombre_archivo_log=None):
     nuevas_lineas = "\n".join(lineas)
     log_advertencias = ["TODO"]
 
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "referencia_imagenes")
+    # guardar_texto_con_timestamp(nuevas_lineas, "referencia_imagenes")
 
-    # === 1b. INSERTAR ESPACIO ENTRE PUNTO Y LETRAS ===
+    # === 1b. INSERTAR ESPACIO ENTRE PUNTO Y LETRAS; "1.a)" --> "1. a)" ===
     nuevas_lineas = insertar_espacio_entre_punto_y_letra(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "espacio_entre_punto_y_letra")
+    # guardar_texto_con_timestamp(nuevas_lineas, "espacio_entre_punto_y_letra")
 
     # === 1c. UNIR NUMERACIÓN CON LETRA PARTIDOS POR SALTO DE LINEA ===
-    nuevas_lineas = unir_numeracion_con_letra(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "unir_numeracion_con_letra")
+    # nuevas_lineas = unir_numeracion_con_letra(nuevas_lineas)
+    # if DEBUG:
+        # guardar_texto_con_timestamp(nuevas_lineas, "unir_numeracion_con_letra")
 
-    # === 1d. INSERTAR ESPACIO ENTRE LETRA Y TEXTO ===
+    # === 1d. INSERTAR ESPACIO ENTRE LETRA Y TEXTO: "a)Lorem." --> "a) Lorem."===
     nuevas_lineas = insertar_espacio_tras_letra_y_parentesis(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "espacio_tras_letra_parentesis")
+    # guardar_texto_con_timestamp(nuevas_lineas, "espacio_tras_letra_parentesis")
 
+    # === ELIMINAR NUMERACIÓN HUÉRFANA ===
+    # >>> Resulta que la posición donde aparece no es nada confiable.
+    nuevas_lineas = eliminar_numeraciones_huerfanas(nuevas_lineas)
+    # guardar_texto_con_timestamp(nuevas_lineas, "numeros_huerfanos")
+
+    # === CAMBIAR LETRAS POR GUIONES EN COMENTARIOS EXPLICATIVOS: "a) Lorem." --> "- Lorem." ===
+    guardar_texto_con_timestamp(nuevas_lineas, "pre_letra_a_guion")
+    nuevas_lineas = reemplazar_letras_en_bloques(nuevas_lineas)
+    guardar_texto_con_timestamp(nuevas_lineas, "post_letra_a_guion")
+
+    # === 2. AGREGAR NUMERACIÓN FALTANTE - NUEVA VERSIÓN ===
+    nuevas_lineas = agregar_numeracion_a_respuestas_huerfanas(nuevas_lineas)
+    # guardar_texto_con_timestamp(nuevas_lineas, "numeracion_v2")
+    
     # === 2. AGREGAR NUMERACIÓN FALTANTE ===
     nuevas_lineas = corregir_numeracion_y_letras(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "numeracion")
+    # guardar_texto_con_timestamp(nuevas_lineas, "numeracion")
 
     # === 3. CORREGIR LETRAS RARAS / DUPLICADAS ===
     nuevas_lineas = corregir_letras_duplicadas(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "letras")
+    # guardar_texto_con_timestamp(nuevas_lineas, "letras")
 
     # === 3b. CORREGIR NUMERACIÓN PREGUNTAS RESERVA ===
     nuevas_lineas = corregir_numeracion_preguntas_reserva(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "preguntas_reserva")
+    # guardar_texto_con_timestamp(nuevas_lineas, "preguntas_reserva")
 
     # === 4. INSERTAR LÍNEA VACÍA ENTRE CADA ITEM ===
     nuevas_lineas = insertar_linea_vacia_antes_numeracion(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "insertar_lineas")
+    # guardar_texto_con_timestamp(nuevas_lineas, "insertar_lineas")
 
     # === 4b. INSERTAR LÍNEA VACÍA EN "Preguntas de reserva" ===
     nuevas_lineas = reemplazar_texto_por_linea_vacia(
         nuevas_lineas, "Preguntas de reserva"
     )
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "limpiar_str_preguntas_reserva")
+    # guardar_texto_con_timestamp(nuevas_lineas, "limpiar_str_preguntas_reserva")
 
     # === 5. UNIR ORACIONES PARTIDAS ===
     nuevas_lineas = unir_oraciones_partidas(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "unir_oraciones")
+    # guardar_texto_con_timestamp(nuevas_lineas, "unir_oraciones")
 
     # === 6. CORREGIR PALABRAS PARTIDAS CON GUIONES ===
     nuevas_lineas = unir_palabras_partidas_por_guiones(nuevas_lineas)
-    if DEBUG:
-        guardar_texto_con_timestamp(nuevas_lineas, "unir_palabras")
+    # guardar_texto_con_timestamp(nuevas_lineas, "unir_palabras")
 
     # === 7. GUARDAR RESULTADOS ===
     with open(archivo_log, "a", encoding="utf-8") as f:
