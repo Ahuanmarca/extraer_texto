@@ -58,11 +58,14 @@ def main():
         texto_respuestas,
         nombre_archivo_log=nombre_archivo_log,
     )
-    # guardar_texto_con_timestamp(texto_respuestas, "05_normalizar_respuestas")
 
     # Combinar preguntas y respuesta en un único archivo
     preguntas_respuestas = script_210.main(texto_preguntas, texto_respuestas)
-    # guardar_texto_con_timestamp(preguntas_respuestas, "06_preguntas_respuestas")
+
+    # Guardar snapshot de archivos antes de fusionarlos y marcar errores
+    # guardar_texto_con_timestamp(texto_preguntas, "preguntas_normalizadas")
+    # guardar_texto_con_timestamp(texto_respuestas, "respuestas_normalizadas")
+    # guardar_texto_con_timestamp(preguntas_respuestas, "preguntas_respuestas_fusionadas")
 
     # Buscar errores y marcarlos con "=== TO FIX ==="
     preguntas_respuestas = script_040.main(

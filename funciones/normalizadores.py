@@ -130,7 +130,7 @@ def eliminar_numeraciones_huerfanas(texto: str) -> str:
     lineas = texto.splitlines()
     nuevas_lineas = []
     log_lines = []
-    
+
     patron_huerfana = re.compile(r"^\s*\d+\.?\s*$")
 
     for linea in lineas:
@@ -155,14 +155,16 @@ def reemplazar_letras_en_bloques(texto: str) -> str:
     for i, linea in enumerate(lineas):
         linea_actual_es_letra = bool(patron_letra.match(linea.strip()))
 
-        linea_anterior_es_letra = (
-            i > 0 and bool(patron_letra.match(lineas[i - 1].strip()))
+        linea_anterior_es_letra = i > 0 and bool(
+            patron_letra.match(lineas[i - 1].strip())
         )
-        linea_siguiente_es_letra = (
-            i < len(lineas) - 1 and bool(patron_letra.match(lineas[i + 1].strip()))
+        linea_siguiente_es_letra = i < len(lineas) - 1 and bool(
+            patron_letra.match(lineas[i + 1].strip())
         )
 
-        if linea_actual_es_letra and (linea_anterior_es_letra or linea_siguiente_es_letra):
+        if linea_actual_es_letra and (
+            linea_anterior_es_letra or linea_siguiente_es_letra
+        ):
             # Reemplazar la letra inicial por un guion
             nueva_linea = re.sub(r"^([a-dA-D]\))", "-", linea, count=1)
             nuevas_lineas.append(nueva_linea)
@@ -181,7 +183,9 @@ def agregar_numeracion_a_respuestas_huerfanas(texto: str) -> str:
     """
 
     # === Primera pasada: detectar bloques importantes (letras huérfanas y numeradas correctas) ===
-    eventos = []  # Ejemplo: [('huérfana', 'a)'), ('huérfana', 'b)'), ('numerada', 10), ...]
+    eventos = (
+        []
+    )  # Ejemplo: [('huérfana', 'a)'), ('huérfana', 'b)'), ('numerada', 10), ...]
 
     patron_huerfana = re.compile(r"^\s*([a-dA-D]{1,2})\)")
     patron_numerada = re.compile(r"^\s*(\d+)\.\s*([a-dA-D]{1,2})\)")
@@ -196,12 +200,12 @@ def agregar_numeracion_a_respuestas_huerfanas(texto: str) -> str:
         match_num = patron_numerada.match(linea)
         if match_num:
             numero = int(match_num.group(1))
-            eventos.append(('numerada', numero))
+            eventos.append(("numerada", numero))
             continue
 
         match_huerfana = patron_huerfana.match(linea)
         if match_huerfana:
-            eventos.append(('huérfana', match_huerfana.group(1).lower()))
+            eventos.append(("huérfana", match_huerfana.group(1).lower()))
             continue
 
     # === Construir la lista de numeraciones que usaremos ===
@@ -209,10 +213,10 @@ def agregar_numeracion_a_respuestas_huerfanas(texto: str) -> str:
     siguiente_num = 1
 
     for tipo, dato in eventos:
-        if tipo == 'huérfana':
+        if tipo == "huérfana":
             numeraciones.append(siguiente_num)
             siguiente_num += 1
-        elif tipo == 'numerada':
+        elif tipo == "numerada":
             numeraciones.append(dato)
             siguiente_num = dato + 1  # Nos sincronizamos al número real encontrado
 
@@ -233,7 +237,7 @@ def agregar_numeracion_a_respuestas_huerfanas(texto: str) -> str:
         match_huerfana = patron_huerfana.match(original)
         if match_huerfana:
             letra = match_huerfana.group(1).lower()
-            resto = original[len(match_huerfana.group(0)):].lstrip()
+            resto = original[len(match_huerfana.group(0)) :].lstrip()
             numero = numeraciones[idx_numeracion]
             nueva_linea = f"{numero}. {letra}) {resto}"
             nuevas_lineas.append(nueva_linea)
@@ -465,6 +469,61 @@ def insertar_linea_vacia_antes_numeracion(texto: str) -> str:
     return "\n".join(nuevas_lineas)
 
 
+# VERSION MÁS RESTRINGIDA DE UNIR ORACIONES PARTIDAS
+# En teoría se puede usar antes en el pipeline
+def unir_oraciones_partidas_v2(texto: str) -> str:
+    """
+    Une líneas partidas que forman parte de la misma oración,
+    respetando reglas estrictas para no unir bloques que no deben.
+
+    Protecciones:
+    - No une si hay una línea vacía entre medio.
+    - No une si la siguiente línea empieza con comillas (" o “).
+    - No une si la siguiente línea empieza con letra tipo "a)", "b)", etc.
+    - No une si la siguiente línea empieza con numeración tipo "1.", "34 ", etc.
+    - No une si la línea actual termina en ciertos caracteres que indican fin de frase (. ? ! : ;)
+    """
+
+    caracteres_finales = {".", "?", "!", ":", ";"}
+    resultado = []
+    buffer = ""
+    lineas = texto.splitlines()
+
+    patron_letra = re.compile(r"^\s*[a-dA-D][a-dA-D]?\)")
+    patron_numero = re.compile(r"^\s*\d+[\.\s]")
+
+    for idx, linea in enumerate(lineas):
+        linea_actual = linea.rstrip()
+
+        if not linea_actual:
+            if buffer:
+                resultado.append(buffer)
+                buffer = ""
+            resultado.append("")  # Línea vacía real
+            continue
+
+        siguiente_linea = lineas[idx + 1].lstrip() if idx + 1 < len(lineas) else ""
+
+        if buffer:
+            if (
+                (not buffer[-1] in caracteres_finales)
+                and (not linea_actual.startswith(('"', "“")))
+                and (not patron_letra.match(siguiente_linea))
+                and (not patron_numero.match(siguiente_linea))
+            ):
+                buffer += " " + linea_actual
+            else:
+                resultado.append(buffer)
+                buffer = linea_actual
+        else:
+            buffer = linea_actual
+
+    if buffer:
+        resultado.append(buffer)
+
+    return "\n".join(resultado)
+
+
 def unir_oraciones_partidas(lineas: str) -> str:
     """
     Une líneas partidas que forman parte de la misma oración,
@@ -581,13 +640,17 @@ def unir_palabras_partidas_por_guiones(texto: str) -> str:
                 )
                 offset -= len("- ")
                 # print(
-                    # f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)"
+                # f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)"
                 # )
-                log_lines.append(f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)")
+                log_lines.append(
+                    f"✔️ Línea {i}: {resaltado_original} → {resaltado_modificado} (automático)"
+                )
 
             elif fragmento_rechazado(original_fragmento):
                 # print(f"⏩ Línea {i}: {resaltado_original} (rechazo automático)")
-                log_lines.append(f"⏩ Línea {i}: {resaltado_original} (rechazo automático)")
+                log_lines.append(
+                    f"⏩ Línea {i}: {resaltado_original} (rechazo automático)"
+                )
                 # No hacemos nada, mantenemos la palabra partida
 
             else:
@@ -648,9 +711,11 @@ def eliminar_basurita_final(texto: str, basuritas: set) -> str:
 
                 resaltado = parte_buena + COLOR_BEGIN + basura + COLOR_END
                 # print(
-                    # f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n"
+                # f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n"
                 # )
-                log_lines.append(f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n")
+                log_lines.append(
+                    f"✔️ Corrigiendo línea:\nAntes: {resaltado}\nDespués: {parte_buena}\n"
+                )
 
                 linea_original = parte_buena  # Actualizamos la línea ya corregida
                 break  # Solo quitamos una basura por línea (si hay varias, correría de nuevo en otra pasada)
