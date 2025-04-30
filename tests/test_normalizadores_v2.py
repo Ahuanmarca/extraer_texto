@@ -85,3 +85,84 @@ Texto normal sin cambios.
 b) Segunda opción"""
 
     assert insertar_espacio_tras_letra_y_parentesis_v2(texto) == esperado
+
+
+
+from funciones.normalizadores_v2 import eliminar_basuritas_inicio
+
+
+def test_eliminar_basuritas_inicio_basico():
+    texto = """#$hello, world
+I took CS50!#$
+FooBarRenzo
+FooBarFooBarBelon
+Esta linea no se debería modificar."""
+    esperado = """hello, world
+I took CS50!#$
+Renzo
+FooBarBelon
+Esta linea no se debería modificar."""
+
+    resultado = eliminar_basuritas_inicio(texto, {"#$", "FooBar"})
+    assert resultado == esperado
+
+
+def test_eliminar_basuritas_inicio_no_cambia_lineas_sanas():
+    texto = """Hola mundo
+Prueba normal
+Sin basura al inicio"""
+    esperado = texto
+
+    resultado = eliminar_basuritas_inicio(texto, {"#$", "FooBar"})
+    assert resultado == esperado
+
+
+def test_eliminar_basuritas_inicio_solo_una_vez():
+    texto = """FooBarFooBarFooBarHola"""
+    esperado = """FooBarFooBarHola"""
+
+    resultado = eliminar_basuritas_inicio(texto, {"FooBar"})
+    assert resultado == esperado
+
+
+def test_eliminar_basuritas_inicio_multiple_sets():
+    texto = """ABChello
+XYZworld
+123test"""
+    esperado = """hello
+world
+test"""
+
+    resultado = eliminar_basuritas_inicio(texto, {"ABC", "XYZ", "123"})
+    assert resultado == esperado
+
+
+# def test_eliminar_basuritas_inicio_con_espacios():
+#     texto = """  FooBarHola mundo
+#       #$Prueba"""
+#     esperado = """  FooBarHola mundo
+#       Prueba"""
+    
+#     resultado = eliminar_basuritas_inicio(texto, {"#$"})
+#     assert resultado == esperado
+
+
+
+def test_eliminar_basuritas_inicio_linea_vacia():
+    texto = """
+
+FooBarTexto"""
+    esperado = """
+
+Texto"""
+
+    resultado = eliminar_basuritas_inicio(texto, {"FooBar"})
+    assert resultado == esperado
+
+
+def test_eliminar_basuritas_inicio_no_elimina_medio_linea():
+    texto = """Hola FooBarMundo"""
+    esperado = """Hola FooBarMundo"""
+
+    resultado = eliminar_basuritas_inicio(texto, {"FooBar"})
+    assert resultado == esperado
