@@ -11,7 +11,7 @@ from scripts import (
 )
 
 from funciones.debug import guardar_texto_con_timestamp
-
+from funciones.exportadores import parsear_preguntas
 
 def obtener_nombre_carpeta():
     # 1. Comprobar si se pasó como argumento
@@ -72,6 +72,9 @@ def main():
         preguntas_respuestas, nombre_archivo_log=nombre_archivo_log
     )
     # guardar_texto_con_timestamp(preguntas_respuestas, "07_marcar_errores")
+
+    # === EXPORTAR A JavaScript ===
+    parsear_preguntas(preguntas_respuestas, nombre_archivo_log + ".js")
 
     # === GUARDAR ARCHIVO FINAL ===
     output_dir = os.path.join("carpeta_trabajo", "output")
