@@ -4,7 +4,7 @@ from datetime import datetime
 # Base de tu proyecto
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CARPETA_TRABAJO = os.path.join(BASE_DIR, "carpeta_trabajo")
-CARPETA_STEPS = os.path.join(CARPETA_TRABAJO, "steps")
+CARPETA_STEPS = os.path.join(CARPETA_TRABAJO, "output/010-steps")
 
 def guardar_texto_con_timestamp(texto: str, sufijo: str = None) -> str:
     """
