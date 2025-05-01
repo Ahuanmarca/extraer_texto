@@ -78,7 +78,7 @@ def main():
     
 
     # === GUARDAR ARCHIVO FINAL ===
-    output_dir = os.path.join("carpeta_trabajo", "output")
+    output_dir = os.path.join("carpeta_trabajo", "output/020-output")
     os.makedirs(output_dir, exist_ok=True)
 
     ruta_salida_final = os.path.join(output_dir, f"{nombre_carpeta}.txt")
