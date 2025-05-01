@@ -34,7 +34,7 @@ def main():
     os.makedirs("carpeta_trabajo", exist_ok=True)
 
     # Nombre de archivo log
-    nombre_archivo_log = nombre_carpeta[:-1]
+    nombre_archivo_log = "output/030-logs/" + nombre_carpeta[:-1] # <-- TODO: Quitar código duro
 
     # Extraer texto de imágenes crudas
     texto_preguntas = script_010.main(nombre_carpeta, nombre_archivo_log)
