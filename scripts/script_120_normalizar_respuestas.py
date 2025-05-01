@@ -3,6 +3,9 @@ import os
 from collections import Counter
 from funciones.debug import guardar_texto_con_timestamp
 
+# NORMALIZADORES V1
+from funciones.normalizadores import unir_palabras_partidas_por_guiones
+
 # NORMALIZADORES V2
 from funciones.normalizadores_v2 import eliminar_referencias_imagen
 from funciones.normalizadores_v2 import eliminar_basurita_suelta
@@ -26,7 +29,12 @@ def main(texto, nombre_archivo_log=None):
     """
     Notas de acciones de normalización:
     - No se inserta posible espacio faltante tras numeración y punto, como "1.a)" - Al parecer no hay incidencias
-    - No se elimina basurita al final de las líneas. ¿Sería bueno?
+    - No se elimina basurita al final de las líneas. Al parecer no es necesario en este caso, pero debería ser parte estándar del proceso.
+    - Se eliminan "basuritas" manualmente porque no he logrado limpiarlas con un algoritmo más general.
+    - Se reemplazan varias líneas manualmente porque no he logrado normalizarlas con un algoritmo más general.
+    Se tendrían que corregir estos puntos para que esta herramienta pueda usarse en diferentes proyectos.
+    Los pasos de limpieza deberían ser muy muy pequeños y robustos.
+    Muchos pasos pequeños y robustos antes de hacer transformaciones grandes.
     """
 
     nuevas_lineas = eliminar_referencias_imagen(texto)
@@ -73,6 +81,26 @@ def main(texto, nombre_archivo_log=None):
         "2. b) Mediante la comunicación y la formación.",
         "b) Mediante la comunicación y la formación.",
     )
+    nuevas_lineas = reemplazar_linea(
+        nuevas_lineas,
+        "4. Abstenerse de fumar, distribuir publicidad, pegar carteles, mendigar, organizar ri- fas o",
+        "Nr. 4. Abstenerse de fumar, distribuir publicidad, pegar carteles, mendigar, organizar ri- fas o",
+    )
+    nuevas_lineas = reemplazar_linea(
+        nuevas_lineas,
+        "3. Arecibir antes del viaje, cuando así lo soliciten, la siguiente información:",
+        "Nr. 3. Arecibir antes del viaje, cuando así lo soliciten, la siguiente información:",
+    )
+    nuevas_lineas = reemplazar_linea(
+        nuevas_lineas,
+        "2. Atender las indicaciones que les formule el personal de Renfe Viajeros o el personal",
+        "Nr. 2. Atender las indicaciones que les formule el personal de Renfe Viajeros o el personal",
+    )
+    # nuevas_lineas = reemplazar_linea(
+        # nuevas_lineas,
+        # "Para calcular el NPS se pide a lo clientes",
+        # "Nr. 1. NPS (Net Promoter Score) (...) Para calcular el NPS se pide a los clientes calificar",
+    # )
     # TODO: ESTO LO DEBERÍA PILLAR LA FUNCIÓN insertar_espacio_tras_letra_y_parentesis_v2,
     # PERO NO LO HACE. NO SÉ LA CAUSA
     nuevas_lineas = reemplazar_linea(nuevas_lineas, "a)JPpi:", "a) JPpi:")
@@ -102,6 +130,9 @@ def main(texto, nombre_archivo_log=None):
             ("cc)", "c)"),
             ("3Ma)", "a)"),
             ("C)", "c)"),
+            ("1. NPS", "Nr. 1. NPS"),
+            ("4. Abstenerse", "Nr. 4. Abstenerse"),
+            ("4. A recibir", "Nr.4. A recibir")
         ],
     )
 
