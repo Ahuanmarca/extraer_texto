@@ -73,11 +73,8 @@ def main():
     )
     # guardar_texto_con_timestamp(preguntas_respuestas, "07_marcar_errores")
 
-    # === EXPORTAR A JavaScript ===
-    cuestionario_javascript, log_lines = generar_javascript(preguntas_respuestas)
-    
 
-    # === GUARDAR ARCHIVO FINAL ===
+    # === GUARDAR ARCHIVO TEXTO PLANO ===
     output_dir = os.path.join("carpeta_trabajo", "output/020-output")
     os.makedirs(output_dir, exist_ok=True)
 
@@ -85,6 +82,16 @@ def main():
 
     with open(ruta_salida_final, "w", encoding="utf-8") as f:
         f.write(preguntas_respuestas)
+
+    # === EXPORTAR A JavaScript ===
+    cuestionario_javascript, log_lines = generar_javascript(preguntas_respuestas)
+    export_js_dir = os.path.join("carpeta_trabajo", "output/040-export-js")
+    os.makedirs(export_js_dir, exist_ok=True)
+
+    ruta_salida_export_js = os.path.join(export_js_dir, f"{nombre_archivo_log}".js)
+
+    with open(ruta_salida_export_js, "w", encoding="utf-8") as f:
+        f.write(cuestionario_javascript)
 
     print(f"✅ Archivo final guardado en: {ruta_salida_final}")
 
