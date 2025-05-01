@@ -29,6 +29,8 @@ def generar_javascript(texto_multilinea):
         opciones = []
         while i < len(lineas) and len(opciones) < 4:
             linea = lineas[i].strip()
+            if es_respuesta(linea) or es_pregunta(linea):
+                break
             if es_opcion(linea):
                 opciones.append(linea)
             i += 1
