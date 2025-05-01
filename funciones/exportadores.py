@@ -49,9 +49,9 @@ def generar_javascript(texto_multilinea):
         correcta = "[RESPUESTA NO DETECTADA]"
         while i < len(lineas):
             if es_respuesta(lineas[i]):
-                match = re.match(rf"^{numero}\.\s+([a-d]\))", lineas[i])
+                match = re.match(rf"^{numero}\.\s+([a-d]\)\s+.+)", lineas[i])
                 if match:
-                    correcta = match.group(1)
+                    correcta = match.group(1)  # Captura "c) texto completo"
                 i += 1
                 break
             i += 1
