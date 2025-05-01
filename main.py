@@ -21,7 +21,8 @@ def obtener_nombre_carpeta():
         nombre = input("Introduce el nombre de la carpeta de imágenes: ").strip()
 
     # 2. Verificar si existe dentro de 'imagenes_crudas/'
-    ruta = os.path.join("imagenes_crudas", nombre)
+    ruta = os.path.join("carpeta_trabajo", "imagenes_crudas", nombre) # <- TODO: Quitar código duro
+    print(ruta)
     if not os.path.isdir(ruta):
         print(f"❌ La carpeta '{nombre}' no existe dentro de 'imagenes_crudas/'.")
         sys.exit(1)
