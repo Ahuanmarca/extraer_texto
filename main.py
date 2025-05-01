@@ -88,7 +88,7 @@ def main():
     export_js_dir = os.path.join("carpeta_trabajo", "output/040-export-js")
     os.makedirs(export_js_dir, exist_ok=True)
 
-    ruta_salida_export_js = os.path.join(export_js_dir, f"{nombre_archivo_log}".js)
+    ruta_salida_export_js = os.path.join(export_js_dir, f"{nombre_carpeta[:-1]}.js")
 
     with open(ruta_salida_export_js, "w", encoding="utf-8") as f:
         f.write(cuestionario_javascript)
